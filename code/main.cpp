@@ -1,9 +1,9 @@
 #include <cstdlib>
 #include <SFML/Graphics.hpp>
+#include "myOption.h"
+#include "action.h"
 
 using namespace sf;
-
-const int SCREEN_WIDTH = 800, SCREEN_HEIGHT = 500, SCREEN_BPP = 32 ;
 
 int main ( int argc, char *argv[] )
 {
@@ -13,7 +13,7 @@ int main ( int argc, char *argv[] )
 	
 	// Déclaration des variables
 	int action = 1 ;
-	//Option opt = Option ( ) ;
+	myOption opt = myOption ( ) ;
 	
 	while ( action != 0 )
 	{
@@ -23,7 +23,7 @@ int main ( int argc, char *argv[] )
 		
 			case 1 :
 				// Menu
-				action = menu ( window ) ;
+				action = menu ( window, opt ) ;
 				break ;
 				
 			default :
