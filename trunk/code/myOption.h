@@ -1,21 +1,37 @@
 #ifndef __MYOPTION_H__
 
 #define __MYOPTION_H__
-//#include <SFML/Event.hpp>
+#include <SFML/Window/Event.hpp>
 
-public class myOption
+class myOption
 {
 	
-	public myOption ( ) ;
-	public ~myOption ( ) ;
+	private :
+		sf::Key::Code up ;
+		sf::Key::Code down ;
+		sf::Key::Code left ;
+		sf::Key::Code right ;
+		sf::Key::Code valid ;
+		sf::Key::Code cancel ;
 	
-	public sf::Key::Code getUpKey ( ) ;
-	public sf::Key::Code getDownKey ( ) ;
-	public sf::Key::Code getLeftKey ( ) ;
-	public sf::Key::Code getRightKey ( ) ;
-	public sf::Key::Code getValidKey ( ) ;
-	public sf::Key::Code getCancelKey ( ) ;
+	public :
+		myOption ( ) ;
+		~myOption ( ) ;
 	
-}
+		sf::Key::Code getUpKey ( ) ;
+		sf::Key::Code getDownKey ( ) ;
+		sf::Key::Code getLeftKey ( ) ;
+		sf::Key::Code getRightKey ( ) ;
+		sf::Key::Code getValidKey ( ) ;
+		sf::Key::Code getCancelKey ( ) ;
+	
+		void setUpKey ( sf::Key::Code key ) ;
+		void setDownKey ( sf::Key::Code key ) ;
+		void setLeftKey ( sf::Key::Code key ) ;
+		void setRightKey ( sf::Key::Code key ) ;
+		void setValidKey ( sf::Key::Code key ) ;
+		void setCancelKey ( sf::Key::Code key ) ;
+	
+} ;
 
 #endif
