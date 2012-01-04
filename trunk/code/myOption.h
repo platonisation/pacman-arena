@@ -1,7 +1,7 @@
 #ifndef __MYOPTION_H__
 
 #define __MYOPTION_H__
-#include <SFML/Event.hpp>
+//#include <SFML/Event.hpp>
 
 public class myOption
 {
