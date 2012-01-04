@@ -9,7 +9,7 @@ int main ( int argc, char *argv[] )
 {
 	
 	// Ouverture de la fenêtre avec la SMFL
-	RenderWindow app ( VideoMode ( 800, 600, 32 ), "Ma premiere fenetre SFML ! " ) ;
+	RenderWindow window ( VideoMode ( 800, 600, 32 ), "Ma premiere fenetre SFML ! " ) ;
 	
 	// Déclaration des variables
 	int action = 1 ;
@@ -23,7 +23,7 @@ int main ( int argc, char *argv[] )
 		
 			case 1 :
 				// Menu
-				// action = menu ( background, button, police, time, size, diamonds ) ;
+				action = menu ( window ) ;
 				break ;
 				
 			default :
@@ -38,7 +38,7 @@ int main ( int argc, char *argv[] )
 	// ...
 	
 	// Fermeture de la SDL
-	app.Close ( ) ;
+	window.Close ( ) ;
 	
 	return EXIT_SUCCESS;
 }
