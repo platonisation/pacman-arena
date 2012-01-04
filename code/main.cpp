@@ -13,7 +13,7 @@ int main ( int argc, char *argv[] )
 	
 	// Déclaration des variables
 	int action = 1 ;
-	myOption opt = myOption ( ) ;
+	//myOption opt = myOption ( ) ;
 	
 	while ( action != 0 )
 	{
