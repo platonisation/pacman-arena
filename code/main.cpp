@@ -65,6 +65,12 @@ int main ( int argc, char *argv[] )
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Rejoindre" << std::endl ;
 			action = 1 ;
 			break ;
+		
+		case 5 :
+			// En jeu
+			if ( opt.getDebug ( ) ) std::cout << "Ouverture Jouer" << std::endl ;
+			action = 1 ;
+			break ;
 			
         default :
 			if ( opt.getDebug ( ) ) std::cout << "Action inconnue" << std::endl ;
