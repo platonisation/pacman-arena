@@ -16,8 +16,8 @@ int menu ( RenderWindow& window, myOption& opt )
 		s_option = String ( "Paramètres" ),
 		s_quit = String ( "Quitter" ) ;
 	
-	s_join.SetPosition ( 70, window.GetHeight ( ) - 230 ) ;
-	s_create.SetPosition ( 70, window.GetHeight ( ) - 190 ) ;
+	s_join.SetPosition ( 70, window.GetHeight ( ) - 240 ) ;
+	s_create.SetPosition ( 70, window.GetHeight ( ) - 200 ) ;
 	s_option.SetPosition ( 70, window.GetHeight ( ) - 140 ) ;
 	s_quit.SetPosition ( 70, window.GetHeight ( ) - 100 ) ;
 	
@@ -30,6 +30,11 @@ int menu ( RenderWindow& window, myOption& opt )
 		s_create.SetColor ( Color ( 255, 255, 255, ( action == 3 ) ? 255 : 150 ) ) ;
 		s_option.SetColor ( Color ( 255, 255, 255, ( action == 2 ) ? 255 : 150 ) ) ;
 		s_quit.SetColor ( Color ( 255, 255, 255, ( action == 0 ) ? 255 : 150 ) ) ;
+		
+		s_join.SetX ( ( action == 4 ) ? 90 : 70 ) ;
+		s_create.SetX ( ( action == 3 ) ? 90 : 70 ) ;
+		s_option.SetX ( ( action == 2 ) ? 90 : 70 ) ;
+		s_quit.SetX ( ( action == 0 ) ? 90 : 70 ) ;
 		
 		window.Draw ( s_join ) ;
 		window.Draw ( s_create ) ;
