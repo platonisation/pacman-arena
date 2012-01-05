@@ -4,84 +4,106 @@
 
 using namespace sf;
 
-bool loadImage();
+//bool loadImage();
 
 int menu ( RenderWindow window, myOption& opt )
 {
-    bool quitter = false;
-    int action = 3;
-
-    /* Chargement des images necessaires */
-
+	
+    bool quitter = false ;
+    int action = 4 ;
+	
+    /* Chargement des images necessaires
+	
     if(!loadImage())
     {
         //en cas de pépin ( image non dispo )
         return 0;
     }
-
-    while( !quitter )
+	
+	*/
+	
+	String
+		s_join = String ( "Rejoindre une partie" ),
+		s_create = String ( "Créer une partie" ),
+		s_option = String ( "Paramètres" ),
+		s_quit = String ( "Quitter" ) ;
+	
+	s_join.SetPosition ( 50, window.GetHeight ( ) - 170 ) ;
+	s_create.SetPosition ( 50, window.GetHeight ( ) - 130 ) ;
+	s_option.SetPosition ( 50, window.GetHeight ( ) - 90 ) ;
+	s_quit.SetPosition ( 50, window.GetHeight ( ) - 50 ) ;
+	
+	s_join.SetColor ( Color ( 255, 255, 255, 255 ) ) ;
+	s_join.SetColor ( Color ( 255, 255, 255, 150 ) ) ;
+	s_join.SetColor ( Color ( 255, 255, 255, 150 ) ) ;
+	s_join.SetColor ( Color ( 255, 255, 255, 150 ) ) ;
+	
+    while ( ! quitter ) // Boucle d'affichage
     {
-        Event event;
-        while (app.GetEvent(event)) // Boucle des évènements
+		
+		window.Clear ( ) ;
+		
+		window.Draw ( s_join ) ;
+		window.Draw ( s_create ) ;
+		window.Draw ( s_option ) ;
+		window.Draw ( s_quit ) ;
+		
+		window.Display ( ) ;
+		
+        Event event ;
+        while ( window.GetEvent ( event ) ) // Boucle des évènements
         {
-            switch (event.Type) // Type de l'évènement en attente :
-            {
-            case Event::Closed : // Croix en haut à droite
-                action = 0;
-                quitter = true;
-                break;
-
-            case Event::KeyPressed : // Appui sur une touche du clavier
-            {
-
-                if ( opt.getUpKey() )
-                {
-                    action += 1;
-                    if(action <= 3)
-                        action = 3;
-                    /* on augmente la selection de x pixels */
-                }
-                else if ( opt.getLeftKey() )
-                {
-                    action += 1;
-                    if(action <= 3)
-                        action = 3;
-                    /* on augmente la selection de x pixels */
-                }
-                else if ( opt.getRightKey() )
-                {
-                    action -= 1;
-                    if( action == 0)
-                        action = 0;
-                    /* on diminue la selection de x pixels */
-                }
-                else if ( opt.getDownKey() )
-                {
-                    action -= 1;
-                    if( action == 0)
-                        action = 0;
-                    /* on augmente la selection de x pixels */
-                }
-                else if ( opt.getValidKey() )
-                {
-                    quitter = true;
-                }
-
-            }
-            break;
-
-            default :
-                break
-            }
-        }
-    }
-    return action;
+			
+			switch ( event.Type ) // Type de l'évènement en attente :
+			{
+				
+			case Event::Closed : // Croix en haut à droite
+				action = 0;
+				quitter = true;
+			break;
+			
+			case Event::KeyPressed : // Appui sur une touche du clavier
+				if ( event.Type.Code == opt.getUpKey() ) // Appui sur la touche Haut
+				{
+					if ( action == 0 )
+						action = 2 ;
+					else if ( action == 4 )
+						action = 0 ;
+					else
+						action ++ ;
+				}
+				else if ( event.Type.Code == opt.getDownKey() ) // Appui sur la touche Bas
+				{
+					if ( action == 0 )
+						action = 4 ;
+					else if ( action == 2 )
+						action = 0 ;
+					else
+						action -- ;
+				}
+				else if ( event.Type.Code == opt.getValidKey() ) // Appui sur la touche Valider
+				{
+					quitter = true;
+				}
+			break;
+			
+			default :
+			break;
+			
+			}
+			
+		} // Boucle des évenements
+		
+	} // Boucle d'affichage
+	
+	return action;
+	
 }
 
-
+/*
 bool loadImage()
 {
-    /* image fond */
+    /* image fond
     Image imageFond;
     Sprite spriteFond;
     /*if(imageFond.LoadFromFile("image.jpg"))
@@ -91,7 +113,7 @@ bool loadImage()
 
 
     /* 4 modes de jeu */
-    Font fontFond;
+    /*Font fontFond;
     String text[4];
     /*if(fontFond.LoadFromFile("Arial.ttf"))
     {
@@ -105,5 +127,6 @@ bool loadImage()
     		text[i].SetSize(20);
     		text.SetPosition(vector2f(50, i*50));
     	}
-    }*/
+    }*//*
 }
+*/
