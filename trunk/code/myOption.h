@@ -13,9 +13,10 @@ class myOption
 		sf::Key::Code right ;
 		sf::Key::Code valid ;
 		sf::Key::Code cancel ;
+		bool debug ;
 	
 	public :
-		myOption ( ) ;
+		myOption ( bool debug ) ;
 		~myOption ( ) ;
 	
 		sf::Key::Code getUpKey ( ) ;
@@ -24,6 +25,7 @@ class myOption
 		sf::Key::Code getRightKey ( ) ;
 		sf::Key::Code getValidKey ( ) ;
 		sf::Key::Code getCancelKey ( ) ;
+		bool getDebug ( ) ;
 	
 		void setUpKey ( sf::Key::Code key ) ;
 		void setDownKey ( sf::Key::Code key ) ;

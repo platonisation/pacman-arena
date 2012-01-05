@@ -2,7 +2,7 @@
 
 using namespace sf ;
 
-myOption::myOption ( )
+myOption::myOption ( bool debug = false )
 {
 	
 	this->up = Key::Up ;
@@ -11,6 +11,7 @@ myOption::myOption ( )
 	this->right = Key::Right ;
 	this->valid = Key::Return ;
 	this->cancel = Key::Escape ;
+	this->debug = debug ;
 	
 }
 
@@ -22,6 +23,7 @@ Key::Code myOption::getLeftKey ( ) { return this->left ; }
 Key::Code myOption::getRightKey ( ) { return this->right ; }
 Key::Code myOption::getValidKey ( ) { return this->valid ; }
 Key::Code myOption::getCancelKey ( ) { return this->cancel ; }
+bool myOption::getDebug ( ) { return this->debug ; }
 
 void myOption::setUpKey ( Key::Code key ) { this->up = key ; }
 void myOption::setDownKey ( Key::Code key ) { this->down = key ; }
