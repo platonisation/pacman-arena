@@ -13,7 +13,7 @@ int menu ( RenderWindow& window, myOption& opt )
 	String
 		s_join = String ( "Rejoindre une partie" ),
 		s_create = String ( "Créer une partie" ),
-		s_option = String ( "Paramètres" ),
+		s_option = String ( "Parametres" ),
 		s_quit = String ( "Quitter" ) ;
 	
 	s_join.SetPosition ( 70, window.GetHeight ( ) - 240 ) ;

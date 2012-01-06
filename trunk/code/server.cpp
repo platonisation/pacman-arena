@@ -23,11 +23,11 @@ void manage_client ( void* data )
 	ClientData* cli_data = static_cast<ClientData*> ( data ) ;
 	
 	std::cout << "Prise en charge du client : " << *cli_data->addr << std::endl ;
-	cli_data->sck->Send ( "000 Hi\n", sizeof ( "Hi\n" ) ) ;
+	cli_data->sck->Send ( "000 Hi\n", sizeof ( "000 Hi\n" ) ) ;
 	
 	Sleep ( 2.f ) ;
 	
-	cli_data->sck->Send ( "999 Bye\n", sizeof ( "Bye\n" ) ) ;
+	cli_data->sck->Send ( "999 Bye\n", sizeof ( "999 Bye\n" ) ) ;
 	cli_data->sck->Close ( ) ;
 	std::cout << "Déconnexion du client : " << *cli_data->addr << std::endl ;
 	
