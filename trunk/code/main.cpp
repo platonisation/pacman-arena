@@ -63,7 +63,7 @@ int main ( int argc, char *argv[] )
 		case 4 :
 			// Rejoindre
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Rejoindre" << std::endl ;
-			action = 1 ;
+			action = join (window, opt, sck );
 			break ;
 		
 		case 5 :
