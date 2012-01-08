@@ -1,9 +1,13 @@
+#include <string>
+
 class Character
 {
 	
 	private :
-		unsigned float _x ;
-		unsigned float _y ;
+		bool _online ; 
+		std::string _name ;
+		float _x ;
+		float _y ;
 		
 		unsigned int _point ;
 		
@@ -22,21 +26,22 @@ class Character
 		static const unsigned char SOUTH = 3 ;
 		static const unsigned char WEST = 4 ;
 		
-		Character ( const unsigned float x = 0.f, const unsigned float y = 0.f, const unsigned int point = 0, const unsigned char status = GHOST, const unsigned char moving = NONE, const unsigned char orientation = NORTH ) ;
+		Character ( ) ;
+		Character ( const bool connected, const std::string& name, const float x = 0.f, const float y = 0.f, const unsigned int point = 0, const unsigned char status = GHOST, const unsigned char moving = NONE, const unsigned char orientation = NORTH ) ;
 		~Character ( ) ;
 		
-		unsigned float getX ( ) const ;
-		unsigned float getY ( ) const ;
+		float getX ( ) const ;
+		float getY ( ) const ;
 		unsigned int getPoint ( ) const ;
 		unsigned char getStatus ( ) const ;
 		unsigned char getMoving ( ) const ;
 		unsigned char getOrientation ( ) const ;
 		
-		void setX ( const unsigned float x ) ;
-		void setY ( const unsigned float y ) ;
-		void setPoint ( const unsigned int point ) const ;
+		void setX ( const float x ) ;
+		void setY ( const float y ) ;
+		void setPoint ( const unsigned int point ) ;
 		void setStatus ( const unsigned char status ) ;
 		void setMoving ( const unsigned char moving ) ;
-		unsigned char getOrientation ( const unsigned char orientation ) const ;
+		void getOrientation ( const unsigned char orientation ) ;
 		
 } ;

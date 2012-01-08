@@ -5,11 +5,11 @@ EXEC=Pacman_Arena Pacman_Serv
 
 all: $(EXEC)
 
-Pacman_Arena: main.o create.o join.o menu.o play.o option.o myOption.o Pacman_Serv
-	$(CC) -o $@ main.o create.o join.o menu.o play.o option.o myOption.o $(LDFLAGS)
+Pacman_Arena: main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o Pacman_Serv
+	$(CC) -o $@ main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o $(LDFLAGS)
 
-Pacman_Serv: server.o
-	$(CC) -o $@ server.o $(LDFLAGS)
+Pacman_Serv: server.o Party.o Character.o
+	$(CC) -o $@ server.o Party.o Character.o $(LDFLAGS)
 
 main.o: main.cpp action.h myOption.h
 	$(CC) -o $@ -c $< $(CFLAGS)
@@ -30,6 +30,12 @@ option.o: option.cpp action.h myOption.h
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 myOption.o: myOption.cpp myOption.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+Character.o: Character.cpp Character.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+	
+Party.o: Party.cpp Party.h Character.h
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 server.o: server.cpp
