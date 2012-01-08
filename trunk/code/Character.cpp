@@ -1,5 +1,15 @@
 #include "Character.h"
 
+const unsigned char Character::GHOST = 0 ;
+const unsigned char Character::PACMAN = 1 ;
+const unsigned char Character::SUPER_PACMAN = 2 ;
+
+const unsigned char Character::NONE = 0 ;
+const unsigned char Character::NORTH = 1 ;
+const unsigned char Character::EAST = 2 ;
+const unsigned char Character::SOUTH = 3 ;
+const unsigned char Character::WEST = 4 ;
+
 Character::Character ( ) :
 	_online ( false ),
 	_name ( "Player" ),

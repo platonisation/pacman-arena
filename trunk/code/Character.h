@@ -16,15 +16,15 @@ class Character
 		unsigned char _orientation ;
 		
 	public :
-		static const unsigned char GHOST = 0 ;
-		static const unsigned char PACMAN = 1 ;
-		static const unsigned char SUPER_PACMAN = 2 ;
+		static const unsigned char GHOST ;
+		static const unsigned char PACMAN ;
+		static const unsigned char SUPER_PACMAN ;
 		
-		static const unsigned char NONE = 0 ;
-		static const unsigned char NORTH = 1 ;
-		static const unsigned char EAST = 2 ;
-		static const unsigned char SOUTH = 3 ;
-		static const unsigned char WEST = 4 ;
+		static const unsigned char NONE ;
+		static const unsigned char NORTH ;
+		static const unsigned char EAST ;
+		static const unsigned char SOUTH ;
+		static const unsigned char WEST ;
 		
 		Character ( ) ;
 		Character ( const bool connected, const std::string& name, const float x = 0.f, const float y = 0.f, const unsigned int point = 0, const unsigned char status = GHOST, const unsigned char moving = NONE, const unsigned char orientation = NORTH ) ;
