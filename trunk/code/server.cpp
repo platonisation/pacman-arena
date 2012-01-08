@@ -96,7 +96,7 @@ int main ( int argc, char *argv[] )
 	
 	std::cout << "Démarrage de l'écoute" << std::endl ;
 	// Tant que la partie n'est pas terminée
-	while ( ! party.getEnded ( ) )
+	while ( party.getStatus ( ) != Party::ENDED )
 	{
 		
 		int slot_in_use = 0 ;
