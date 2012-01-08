@@ -2,10 +2,9 @@
 #include <iostream>
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
+#include "Party.h"
 
 using namespace sf ;
-
-class Party { public : bool getEnded ( ) { return false ; } } ;
 
 struct ClientData
 {
@@ -20,7 +19,7 @@ struct ClientData
 void manage_client ( void* data )
 {
 	
-	ClientData* cli_data = static_cast<ClientData*> ( data ) ;
+	ClientData* cli_data = static_cast < ClientData* > ( data ) ;
 	
 	std::cout << "Prise en charge du client : " << *cli_data->addr << std::endl ;
 	cli_data->sck->Send ( "000 Hi\n", sizeof ( "000 Hi\n" ) ) ;
