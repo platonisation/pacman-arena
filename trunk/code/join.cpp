@@ -7,10 +7,10 @@
 
 using namespace sf;
 
-int join ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck ) 
+int join ( RenderWindow& window, myOption& opt, SocketTCP& sck ) 
 {
 
-	sf::Shape Rect = sf::Shape::Rectangle((window.GetWidth()-230)/2,(window.GetHeight()-40)/2 , (window.GetWidth()+230)/2,(window.GetHeight()+40)/2 , Color(0,0,0,0), 5.f, Color::White);
+	Shape Rect = Shape::Rectangle((window.GetWidth()-230)/2,(window.GetHeight()-40)/2 , (window.GetWidth()+230)/2,(window.GetHeight()+40)/2 , Color(0,0,0,0), 5.f, Color::White);
 	
 	int action = 1;
 	bool quitter = false;
@@ -52,7 +52,7 @@ int join ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 						switch(event.Key.Code)
 						{
 							case Key::Period:  // touche .
-								ip += ".";
+								ip += '.';
 								ipDraw.SetText(ip);
 							break;
 							case Key::Back:   
@@ -69,7 +69,7 @@ int join ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 								}
 							break;
 							case Key::Return:   // touche entrées
-								if (sck.Connect(4567, "192.168.0.2") == sf::Socket::Done)
+								if (sck.Connect(8910, ip) == Socket::Done)
 								{
 									quitter = true;
 									action = 5;
