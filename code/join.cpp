@@ -7,49 +7,28 @@
 
 using namespace sf;
 
-std::string askIpAdress(sf::RenderWindow& window, int &action);
-
 int join ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck ) 
 {
-	int action = 0 ;
-	
-	sf::SocketTCP Client;
-	if (Client.Connect(4567, "192.168.0.2") != sf::Socket::Done)
-	{
-		// Error...
-	}
 
-	char Buffer[] = "Hi guys !";
-	if (Client.Send(Buffer, sizeof(Buffer)) != sf::Socket::Done)
-	{
-		// Error...
-	}
-
-	char buffer[128];
-	std::size_t Received;
-	if (Client.Receive(Buffer, sizeof(buffer), Received) != sf::Socket::Done)
-	{
-		// Error...
-	}
+	sf::Shape Rect = sf::Shape::Rectangle((window.GetWidth()-230)/2,(window.GetHeight()-40)/2 , (window.GetWidth()+230)/2,(window.GetHeight()+40)/2 , Color(0,0,0,0), 5.f, Color::White);
 	
-	return action;
-}
-
-std::string askIpAdress(sf::RenderWindow& window, int &action )
-{
-	sf::Shape Rect = sf::Shape::Rectangle((window.GetWidth()-200)/2,(window.GetHeight()-40)/2 , (window.GetWidth()+200)/2,(window.GetHeight()+40)/2 , Color(0,0,0,0), 5.f, Color::White);
-	
+	int action = 1;
 	bool quitter = false;
 	std::string ip;
 	String ipDraw;
 	ipDraw.SetColor(Color::White);
-	ipDraw.SetPosition ( (window.GetWidth()-190)/2, (window.GetHeight()-35)/2 );
+	ipDraw.SetPosition ( (window.GetWidth()-228)/2, (window.GetHeight()-35)/2 );
 	
 	while( !quitter )
 	{
+		window.Clear ( ) ;
+		window.Draw(ipDraw);
+		window.Draw(Rect);
+		window.Display ( ) ;
 		 Event event ;
 		 while ( window.GetEvent ( event ) ) // Boucle des évènements
 			{
+				
 				switch ( event.Type ) // Type de l'évènement en attente :
 				{
 					case Event::Closed : // Croix en haut à droite
@@ -58,28 +37,44 @@ std::string askIpAdress(sf::RenderWindow& window, int &action )
 					break;
 					case Event::KeyPressed : // Appui sur une touche du clavier
 					{
-						if(event.Key.Code <= Key::Num9 || event.Key.Code >= Key::Num0 ) // Si on tape un chiffre en 0 et 9
+						if((event.Key.Code <= Key::Num9 && event.Key.Code >= Key::Num0)) // Si on tape un chiffre en 0 et 9
 						{
 							ip += static_cast<char>(event.Key.Code);
+							ipDraw.SetText(ip);
+							window.Draw(ipDraw);
+						}
+						if((event.Key.Code <= Key::Numpad9 && event.Key.Code >= Key::Numpad0)) // Si on tape un chiffre en 0 et 9
+						{
+							ip += static_cast<char>(event.Key.Code+Key::Num0-Key::Numpad0);
 							ipDraw.SetText(ip);
 							window.Draw(ipDraw);
 						}
 						switch(event.Key.Code)
 						{
 							case Key::Period:  // touche .
-							
+								ip += ".";
+								ipDraw.SetText(ip);
 							break;
 							case Key::Back:   
-								if(ip.size() > 0)
-									quitter == true;
+								if(ip.size() == 0)
+								{
+									action = 1;
+									quitter = true;
+								}
 								else
-									ip = ip.erase(ip.size(),-1);// supprime le dernier charactere
-							break;
-							case Key::Delete:
-								ip = ip.erase(ip.size()-1,1);// supprime le dernier charactere
+								{
+									ip.resize(ip.length()-1);// supprime le dernier charactere
+									ipDraw.SetText(ip);
+									
+								}
 							break;
 							case Key::Return:   // touche entrées
-								quitter=true;
+								if (sck.Connect(4567, "192.168.0.2") == sf::Socket::Done)
+								{
+									quitter = true;
+									action = 5;
+								}
+								
 							break;
 							
 							default:
@@ -96,6 +91,6 @@ std::string askIpAdress(sf::RenderWindow& window, int &action )
 				
 			} // Boucle des évènements
 	}
-	return ip;
 	
+	return action;
 }
