@@ -13,7 +13,9 @@ using namespace sf ;
 struct ClientData
 {
 	unsigned char id ;
-	std::pair < SocketTCP, IPAddress >* client ;
+	unsigned char slot ;
+	std::pair < SocketTCP, IPAddress >** client ;
+	Thread** thread ;
 	Party* party ;
 	Mutex* p_mutex ;
 } ;
@@ -23,12 +25,20 @@ void manage_client ( void* data )
 	
 	ClientData* cli_data = static_cast < ClientData* > ( data ) ;
 	
-	cli_data->client->first.Send ( "Hi\n", sizeof ( "Hi\n" ) ) ;
+	// (*cli_data->client)->first.Send ( "Hi\n", sizeof ( "Hi\n" ) ) ;
 	
-	std::cout << "Déconnexion du client : " << cli_data->client->second << std::endl ;
-	cli_data->client->first.Close ( ) ;
+	Sleep ( 2.f ) ;
+	
+	std::cout << "Déconnexion du client : " << (*cli_data->client)->second << std::endl ;
+	(*cli_data->client)->first.Close ( ) ;
 	
 	delete cli_data ;
+	
+	delete (*cli_data->client) ;
+	(*cli_data->client) = NULL ;
+	
+	delete (*cli_data->thread) ;
+	(*cli_data->thread) = NULL ;
 	
 }
 
@@ -137,12 +147,12 @@ int main ( int argc, char *argv[] )
 				ClientData* cli_data = new ClientData ;
 				
 				cli_data->id = id ;
-				cli_data->clients = clients ;
-				cli_data->threads = threads ;
+				cli_data->client = &clients[id] ;
+				cli_data->thread = &threads[id] ;
 				cli_data->party = &party ;
 				cli_data->p_mutex = &p_mutex ;
 				
-				threads[id] = new Thread ( manage_client, static_cast<void*> ( cli_data ) ) ;
+				threads[id] = new Thread ( manage_client, static_cast < void* > ( cli_data ) ) ;
 				threads[id]->Launch ( ) ;
 				
 			}
