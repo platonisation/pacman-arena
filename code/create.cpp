@@ -3,7 +3,11 @@
 #include "action.h"
 #include <iostream>
 #include <string>
+#include <fstream>
 
+//include C
+#include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h> // struct dirent, opendir(), readdir(), closedir()
 #include <sys/types.h> // DIR type 
 
@@ -11,27 +15,36 @@ using namespace sf;
 
 int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck ) 
 {
-/*	//lecture d'un repertoire
+	//lecture d'un repertoire
+	std::ofstream fichier( "maps/mesmaps", std::ios::out | std::ios::trunc );
 	DIR * dir;
 	struct dirent * entry;
 	dir = opendir("maps/" );
-	std::string test;
-
+ 
 	while((entry = readdir(dir)) != NULL)
-		test << entry->d_name;
-	closedir(dir);*/
+		fichier << entry->d_name << std::endl;
+	closedir(dir);
+	fichier.close();
 	
-	/*# DIR * dir;
-# struct dirent * entry;
-#
-# dir = opendir("/usr/bin" );
-# if( dir == NULL )
-#   perror("" );
-# while((entry = readdir(dir)) != NULL)
-#   fprintf(stdout, "Inside /usr/bin is something called %s\n", entry->d_name);
-# fprintf(stdout, "\n" );
-# closedir(dir);
-*/
+	std::ifstream fichiers( "maps/mesmaps", std::ios::in );
+	std::string maMap;
+	std::string mesMaps;
+	std::string toto;
+	if(fichiers)
+	{
+		while (!fichiers.eof())
+		{
+			fichiers >> toto;
+			maMap = toto;
+			
+			if( maMap.length() > 7 && !fichiers.eof() && maMap.substr(maMap.length()-7,7) == ".pacmap")
+			{
+				mesMaps += toto + "\n"; 	
+			}
+		}
+		std::cout<<mesMaps<<std::endl;
+		fichier.close();
+	}
 	
 	
     bool quitter = false ;
