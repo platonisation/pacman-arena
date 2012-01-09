@@ -14,8 +14,9 @@ Party::Party ( ) :
 	_status ( WAITING ),
 	_map_name ( "" ),
 	_map ( std::vector < std::vector < unsigned char > > ( ) ),
-	_chars ( std::vector < Character > ( ) ),
+	_chars ( std::pair < unsigned char, Character* > ( 0, NULL ) ),
 	_timer ( 0.f ),
+	_msg ( "" ),
 	_slot ( 0 )
 {
 	
@@ -25,8 +26,9 @@ Party::Party ( const std::string& map_name, const float timer, const unsigned ch
 	_status ( WAITING ),
 	_map_name ( map_name ),
 	_map ( std::vector < std::vector < unsigned char > > ( ) ),
-	_chars ( std::vector < Character > ( ) ),
+	_chars ( std::pair < unsigned char, Character* > ( 0, NULL ) ),
 	_timer ( timer ),
+	_msg ( "" ),
 	_slot ( slot )
 {
 	
@@ -85,17 +87,20 @@ void Party::changeMap ( const std::string& map )
 	
 }
 
-std::vector < Character > Party::getChars ( ) const { return _chars ; }
+std::pair < unsigned char, Character* > Party::getChars ( ) const { return _chars ; }
 unsigned char Party::getStatus ( ) const { return _status ; }
 unsigned char Party::getCase ( const unsigned int x, const unsigned int y ) const { return ( x <= getWidth ( ) && y <= getHeight ( ) ) ? _map[x][y] : VOID ; }
 float Party::getTimer ( ) const { return _timer ; }
 unsigned char Party::getSlot ( ) const { return _slot ; }
+std::string Party::getMapName ( ) const { return _map_name ; }
+std::string Party::getMessage ( ) const { return _msg ; }
 
 unsigned int Party::getWidth ( ) const { return _map.size ( ) ; }
 unsigned int Party::getHeight ( ) const { return _map[0].size ( ) ; }
 
-void Party::setChars ( const std::vector < Character >& chars ) { _chars = chars ; }
+void Party::setChars ( const std::pair < unsigned char, Character* >& chars ) { _chars = chars ; }
 void Party::setStatus ( const unsigned char status ) { _status = status ; }
 void Party::setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) { if ( x <= getWidth ( ) && y <= getHeight ( ) ) _map[x][y] = case_status ; }
 void Party::setTimer ( const float timer ) { _timer = timer ; }
 void Party::setSlot ( const unsigned char slot ) { _slot = slot ; }
+void Party::setMessage ( const std::string& msg ) { _msg = msg ; }

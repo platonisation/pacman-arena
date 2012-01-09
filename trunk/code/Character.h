@@ -13,6 +13,7 @@ class Character
 		
 		unsigned char _status ;
 		unsigned char _moving ;
+		unsigned char _wish ;
 		unsigned char _orientation ;
 		
 	public :
@@ -35,6 +36,7 @@ class Character
 		unsigned int getPoint ( ) const ;
 		unsigned char getStatus ( ) const ;
 		unsigned char getMoving ( ) const ;
+		unsigned char getWish ( ) const ;
 		unsigned char getOrientation ( ) const ;
 		
 		void setX ( const float x ) ;
@@ -42,6 +44,7 @@ class Character
 		void setPoint ( const unsigned int point ) ;
 		void setStatus ( const unsigned char status ) ;
 		void setMoving ( const unsigned char moving ) ;
+		void setWish ( const unsigned char wish ) ;
 		void getOrientation ( const unsigned char orientation ) ;
 		
 } ;
