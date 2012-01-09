@@ -11,7 +11,7 @@ using namespace sf;
 
 int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck ) 
 {
-	//lecture d'un repertoire
+/*	//lecture d'un repertoire
 	DIR * dir;
 	struct dirent * entry;
 	dir = opendir("maps/" );
@@ -19,7 +19,7 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 
 	while((entry = readdir(dir)) != NULL)
 		test << entry->d_name;
-	closedir(dir);
+	closedir(dir);*/
 	
 	/*# DIR * dir;
 # struct dirent * entry;
