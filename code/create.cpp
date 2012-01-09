@@ -14,45 +14,49 @@
 using namespace sf;
 
 int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck ) 
-{
+{	
+	int nbMap = 0;
+	
 	//lecture d'un repertoire
-	std::ofstream fichier( "maps/mesmaps", std::ios::out | std::ios::trunc );
+	std::ofstream repertoire( "maps/mesmaps", std::ios::out | std::ios::trunc );
 	DIR * dir;
 	struct dirent * entry;
 	dir = opendir("maps/" );
  
 	while((entry = readdir(dir)) != NULL)
-		fichier << entry->d_name << std::endl;
+		repertoire << entry->d_name << std::endl;
 	closedir(dir);
-	fichier.close();
+	repertoire.close();
+	//Fin lecture
 	
-	std::ifstream fichiers( "maps/mesmaps", std::ios::in );
+	//ecriture dans un string du contenu du repertoire en supprimant tous ce qui n'est pas un extension de map.
+	std::ifstream listMaps( "maps/mesmaps", std::ios::in );
 	std::string maMap;
 	std::string mesMaps;
-	std::string toto;
-	if(fichiers)
+	if(listMaps)
 	{
-		while (!fichiers.eof())
+		while (!listMaps.eof())
 		{
-			fichiers >> toto;
-			maMap = toto;
-			
-			if( maMap.length() > 7 && !fichiers.eof() && maMap.substr(maMap.length()-7,7) == ".pacmap")
+			listMaps >> maMap;
+			if( maMap.length() > 7 && !listMaps.eof() && maMap.substr(maMap.length()-7,7) == ".pacmap")
 			{
-				mesMaps += toto + "\n"; 	
+				mesMaps += maMap + '\n'; 
+				nbMap ++ ;	
 			}
 		}
-		std::cout<<mesMaps<<std::endl;
-		fichier.close();
+		listMaps.close();
 	}
+	//fin ecriture
 	
 	
     bool quitter = false ;
     int action = 1 ;
-    unsigned char focus = 1 ;
-    
+    unsigned char focus = 1 ; 
     char nbPlayers = 51 ; //code ascii de 3
-    std::string listMap;
+	int cptMap = 0 ;   //compte le nombre de map actuel
+    int i = 0 ;  // compte les caractères des maps 1 par 1
+    int j = 0 ;   // permet de compter les caractéres pour chaque maps
+    
 	
 	String
 		s_players = String ( "Joueurs :" ),
@@ -68,6 +72,26 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 	s_back.SetPosition ( 70, window.GetHeight ( ) - 100 ) ;
 	s_choseMap.SetPosition ( 200, window.GetHeight ( ) -200 ) ;
 	s_nbPlayers.SetPosition ( 200, window.GetHeight ( ) - 240 ) ;
+	
+	
+	
+	std::size_t pos =0;
+	std::vector<std::string> listMap;
+
+	while(j<nbMap)
+	{			
+		j++;
+		i=0;			
+		while(mesMaps[i+static_cast<int>(pos)] != '\n' && mesMaps[i] != '\0' )
+			i++;
+		if(mesMaps[pos] != '\0') // evite l'erreur de fin de fichier
+		{
+
+			listMap.push_back(mesMaps.substr(pos,i));
+			s_choseMap.SetText(mesMaps.substr(pos,i));
+			pos += i+1;
+		}
+	}
 	
     while ( ! quitter ) // Boucle d'affichage
     {
@@ -125,7 +149,7 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 				{
 					if ( focus == 1 )
 					{
-						if( nbPlayers > 50 )
+						if( nbPlayers > 50 )  // code ascii de 2
 							nbPlayers -- ;
 						std::string tmp;
 						tmp += nbPlayers; 
@@ -135,7 +159,10 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					else if ( focus == 2 )
 					{
 						action = 0 ;
-						//gestion de tous les fichiers maps
+						s_choseMap.SetText(listMap[cptMap]);
+						cptMap++;
+						if(cptMap >= nbMap)
+							cptMap = 0 ;
 					}
 					else
 						action ++ ;
@@ -144,7 +171,7 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 				{
 					if ( focus == 1 )
 					{
-						if( nbPlayers < 52 )
+						if( nbPlayers < 52 )  // code ascii de 4
 							nbPlayers ++ ;
 						std::string tmp;
 						tmp += nbPlayers; 
@@ -154,7 +181,11 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					else if ( focus == 2 )
 					{
 						action = 0 ;
-						//gestion de tous les fichiers maps
+						s_choseMap.SetText(listMap[cptMap]);
+						cptMap--;
+						if(cptMap < 0)
+							cptMap = nbMap-1 ;
+
 					}
 					else
 						action -- ;
