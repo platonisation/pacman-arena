@@ -118,12 +118,16 @@ int option ( RenderWindow& window, myOption& opt )
 				else if ( event.Key.Code == opt.getValidKey() ) // Appui sur la touche Valider
 				{
 					working = !working;
+					Event event2;
+					
 					//boucle de choix de touche
-					while(working)
+					while(working )
 					{
-						sleep(1.f);
-						std::cout<<"working"<<Event::KeyPressed<<std::endl;
-						if ( event.Type == Event::KeyPressed )
+						while(window.GetEvent(event2))
+						{
+						//sleep(1.f);
+						std::cout<<"working";
+						if ( event2.Type == Event::KeyPressed )
 						{
 							std::cout<<"toto"<<Event::KeyPressed<<std::endl;
 							if ( action == 0 )
@@ -153,6 +157,7 @@ int option ( RenderWindow& window, myOption& opt )
 							working = !working;
 						}
 					}
+				}
 				}
 			break;
 			
