@@ -199,6 +199,20 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					{
 						action = 5 ;
 						// connection
+						pid_t pid = fork();
+						if ( pid == 0 )
+						{
+							std::string strNbPlayers ;
+							strNbPlayers = static_cast<char>(nbPlayers) ;
+							std::cout<<strNbPlayers<<std::endl;
+							
+							execl("Pacman_Serv", "Pacman_Serv", "strNbPlayers", "maps/test.pacman",(char *) 0);
+						}
+						else
+						{
+							quitter = true ;
+							action = 4 ;
+						}
 					}
 				}
 			break;
