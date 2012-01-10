@@ -102,8 +102,8 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 		s_map.SetColor ( Color ( 255, 255, 255, ( focus == 2 ) ? 255 : 150 ) ) ;
 		s_valid.SetColor ( Color ( 255, 255, 255, ( focus == 3 ) ? 255 : 150 ) ) ;
 		s_back.SetColor ( Color ( 255, 255, 255, ( focus == 4 ) ? 255 : 150 ) ) ;
-		s_choseMap.SetColor( Color ( 255, 255, 255, 150 ) ) ;
-		s_nbPlayers.SetColor ( Color ( 255, 255, 255, 255 ) ) ;
+		s_choseMap.SetColor( Color ( 255, 255, 255, ( focus == 2 ) ? 255 : 150 ) ) ;
+		s_nbPlayers.SetColor ( Color ( 255, 255, 255, ( focus == 1 ) ? 255 : 150 ) ) ;
 		
 		s_valid.SetX ( ( focus == 3 ) ? 90 : 70 ) ;
 		s_back.SetX ( ( focus == 4 ) ? 90 : 70 ) ;
