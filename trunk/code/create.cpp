@@ -88,7 +88,7 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 		{
 
 			listMap.push_back(mesMaps.substr(pos,i));
-			s_choseMap.SetText(mesMaps.substr(pos,i));
+			s_choseMap.SetText(listMap[cptMap]);
 			pos += i+1;
 		}
 	}
@@ -159,10 +159,10 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					else if ( focus == 2 )
 					{
 						action = 0 ;
-						s_choseMap.SetText(listMap[cptMap]);
 						cptMap++;
 						if(cptMap >= nbMap)
 							cptMap = 0 ;
+						s_choseMap.SetText(listMap[cptMap]);
 					}
 					else
 						action ++ ;
@@ -181,11 +181,10 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					else if ( focus == 2 )
 					{
 						action = 0 ;
-						s_choseMap.SetText(listMap[cptMap]);
 						cptMap--;
 						if(cptMap < 0)
 							cptMap = nbMap-1 ;
-
+						s_choseMap.SetText(listMap[cptMap]);
 					}
 					else
 						action -- ;
@@ -204,14 +203,20 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 						{
 							std::string strNbPlayers ;
 							strNbPlayers = static_cast<char>(nbPlayers) ;
-							std::cout<<strNbPlayers<<std::endl;
+							std::cout<<"maps/" + listMap[cptMap]<<std::endl;
 							
-							execl("./Pacman_Serv", "./Pacman_Serv", strNbPlayers.c_str ( ), "maps/test.pacman",NULL);
+							execl("./Pacman_Serv", "./Pacman_Serv", strNbPlayers.c_str ( ), "maps/default.pacmap"  ,NULL);
 						}
 						else
 						{
+							sleep(3.f);
 							quitter = true ;
-							action = 4 ;
+							if (sck.Connect(8910, "127.0.0.1") == Socket::Done)
+							{
+								std::cout<<"conncetion";
+								quitter = true;
+								action = 5;
+							}
 						}
 					}
 				}
