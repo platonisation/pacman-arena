@@ -206,7 +206,7 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 							strNbPlayers = static_cast<char>(nbPlayers) ;
 							std::cout<<strNbPlayers<<std::endl;
 							
-							execl("Pacman_Serv", "Pacman_Serv", "strNbPlayers", "maps/test.pacman",(char *) 0);
+							execl("./Pacman_Serv", "./Pacman_Serv", strNbPlayers.c_str ( ), "maps/test.pacman",NULL);
 						}
 						else
 						{
