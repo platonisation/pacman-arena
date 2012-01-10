@@ -47,10 +47,10 @@ int option ( RenderWindow& window, myOption& opt )
 	s_bas.SetPosition ( 70, window.GetHeight ( ) - 160 ) ;
 	s_droit.SetPosition ( 70, window.GetHeight ( ) - 120 ) ;
 	//touches modifiables
-	s_hautM.SetPosition ( 180, window.GetHeight ( ) - 240 ) ;
-	s_gaucheM.SetPosition ( 180, window.GetHeight ( ) - 200 ) ;
-	s_basM.SetPosition ( 180, window.GetHeight ( ) - 160 ) ;
-	s_droitM.SetPosition ( 180, window.GetHeight ( ) - 120 ) ;
+	s_hautM.SetPosition ( 250, window.GetHeight ( ) - 240 ) ;
+	s_gaucheM.SetPosition ( 250, window.GetHeight ( ) - 200 ) ;
+	s_basM.SetPosition ( 250, window.GetHeight ( ) - 160 ) ;
+	s_droitM.SetPosition ( 250, window.GetHeight ( ) - 120 ) ;
 	
 	Shape Rect = Shape::Rectangle(65,(window.GetHeight()-75) , (window.GetWidth()+23)/2,(window.GetHeight()+100)/2 , Color(0,0,0,0), 5.f, Color::White);
 
@@ -119,39 +119,35 @@ int option ( RenderWindow& window, myOption& opt )
 				{
 					working = !working;
 					Event event2;
-					
 					//boucle de choix de touche
-					while(working )
+					while ( working )
 					{
-						while(window.GetEvent(event2))
+						while ( window.GetEvent( event2 ) )
 						{
-						//sleep(1.f);
-						std::cout<<"working";
 						if ( event2.Type == Event::KeyPressed )
 						{
-							std::cout<<"toto"<<Event::KeyPressed<<std::endl;
-							if ( action == 0 )
+							if ( action == 4 )
 							{
-								opt.setRightKey( event.Key.Code ) ;
-								droit = static_cast<char>( event.Key.Code );
+								opt.setRightKey( event2.Key.Code ) ;
+								droit = static_cast<char>( event2.Key.Code );
 								s_droitM.SetText( droit ) ;
 							}
 							else if ( action == 2 )
 							{
-								opt.setLeftKey( event.Key.Code ) ;
-								gauche = static_cast<char>( event.Key.Code );
+								opt.setLeftKey( event2.Key.Code ) ;
+								gauche = static_cast<char>(event2.Key.Code);
 								s_gaucheM.SetText( gauche ) ;
 							}
 							else if ( action == 3 )
 							{
-								opt.setUpKey( event.Key.Code ) ;
-								haut = static_cast<char>( event.Key.Code );
+								opt.setUpKey( event2.Key.Code ) ;
+								haut = static_cast<char>( event2.Key.Code );
 								s_hautM.SetText( haut ) ;
 							}
 							else
 							{
-								opt.setDownKey ( event.Key.Code ) ;
-								bas = static_cast<char>( event.Key.Code );
+								opt.setDownKey ( event2.Key.Code ) ;
+								bas = static_cast<char>( event2.Key.Code );
 								s_basM.SetText( bas ) ;
 							}
 							working = !working;
