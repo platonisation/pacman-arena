@@ -51,7 +51,7 @@ int main ( int argc, char *argv[] )
 		case 2 :
 			// Option
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Option" << std::endl ;
-			action = 1 ;
+			action = option ( window, opt ) ;
 			break ;
 			
 		case 3 :
