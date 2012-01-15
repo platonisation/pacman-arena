@@ -11,7 +11,6 @@ const unsigned char Character::SOUTH = 3 ;
 const unsigned char Character::WEST = 4 ;
 
 Character::Character ( ) :
-	_online ( false ),
 	_name ( "Player" ),
 	_x ( 0.f ),
 	_y ( 0.f ),
@@ -19,13 +18,13 @@ Character::Character ( ) :
 	_status ( GHOST ),
 	_moving ( NONE ),
 	_wish ( NONE ),
-	_orientation ( NORTH )
+	_orientation ( WEST ),
+	_timer ( )
 {
 	
 }
 
-Character::Character ( const bool connected, const std::string& name, const float x, const float y, const unsigned int point, const unsigned char status, const unsigned char moving, const unsigned char orientation ) :
-	_online ( connected ),
+Character::Character ( const std::string& name, const float x, const float y, const unsigned int point, const unsigned char status, const unsigned char moving, const unsigned char orientation ) :
 	_name ( name ),
 	_x ( x ),
 	_y ( y ),
@@ -33,7 +32,8 @@ Character::Character ( const bool connected, const std::string& name, const floa
 	_status ( status ),
 	_moving ( moving ),
 	_wish ( NONE ),
-	_orientation ( orientation )
+	_orientation ( orientation ),
+	_timer ( )
 {
 	
 }
@@ -43,18 +43,22 @@ Character::~Character ( )
 	
 }
 
+std::string Character::getName ( ) const { return _name ; }
 float Character::getX ( ) const { return _x ; }
 float Character::getY ( ) const { return _y ; }
 unsigned int Character::getPoint ( ) const { return _point ; }
 unsigned char Character::getStatus ( ) const { return _status ; }
 unsigned char Character::getMoving ( ) const { return _moving ; }
 unsigned char Character::getWish ( ) const { return _wish ; }
-unsigned char Character::getOrientation ( ) const { return _orientation; }
+unsigned char Character::getOrientation ( ) const { return _orientation ; }
+float Character::getTimer ( ) const { return _timer.GetElapsedTime ( ) ; }
 
+void Character::setName ( const std::string& name ) { _name = name ; }
 void Character::setX ( const float x ) { _x = x ; }
 void Character::setY ( const float y ) { _y = y ; }
 void Character::setPoint ( const unsigned int point ) { _point = point ; }
 void Character::setStatus ( const unsigned char status ) { _status = status ; }
 void Character::setMoving ( const unsigned char moving ) { _moving = moving ; }
 void Character::setWish ( const unsigned char wish ) { _wish = wish ; }
-void Character::getOrientation ( const unsigned char orientation ) { _orientation = _orientation ; }
+void Character::getOrientation ( const unsigned char orientation ) { _orientation = orientation ; }
+void Character::resetTimer ( ) { _timer.Reset ( ) ; }
