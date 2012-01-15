@@ -50,7 +50,7 @@ class Party
 		unsigned int getWidth ( ) const ;
 		unsigned int getHeight ( ) const ;
 		
-		void setChars ( const Character** c ) ;
+		void setChars ( Character** const c ) ;
 		void setStatus ( const unsigned char status ) ;
 		void setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) ;
 		void setTimer ( const float timer ) ;

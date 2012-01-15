@@ -9,7 +9,7 @@ Pacman_Arena: main.o create.o join.o menu.o play.o option.o myOption.o Party.o C
 	$(CC) -o $@ main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o $(LDFLAGS)
 
 Pacman_Serv: server.o Party.o Character.o network.o
-	$(CC) -o $@ server.o Party.o Character.o $(LDFLAGS)
+	$(CC) -o $@ server.o Party.o Character.o network.o $(LDFLAGS)
 
 main.o: main.cpp action.h myOption.h
 	$(CC) -o $@ -c $< $(CFLAGS)

@@ -29,7 +29,7 @@ int main ( int argc, char *argv[] )
 	}
 	
     // Ouverture de la fenêtre avec la SMFL et création du socket
-    RenderWindow window ( VideoMode ( 800, 600, 32 ), "Pacman Arena" ) ;
+    RenderWindow window ( VideoMode ( 1024, 768, 32 ), "Pacman Arena", Style::Close ) ;
     SocketTCP sck  ;
 	
     // Déclaration des variables
