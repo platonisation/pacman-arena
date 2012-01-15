@@ -455,6 +455,8 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 	
 	t.Wait ( ) ;
 	
+	sck = SocketTCP ( ) ;
+	
 	return action;
 	
 }
