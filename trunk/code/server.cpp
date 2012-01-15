@@ -10,6 +10,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 #include "Party.h"
+#include "network.h"
 
 using namespace sf ;
 
@@ -51,9 +52,14 @@ void manage_client ( void* data )
 	while ( ! quit )
 	{
 		
-		/* Traitement à faire pour répondre au client */
+		cli_data->p_mutex->Lock ( ) ;
 		
-		quit = true ;
+		Packet pck ;
+		pck << (*cli_data->party) ;
+		
+		cli_data->p_mutex->Unlock ( ) ;
+		
+		Sleep ( 0.050f ) ;
 		
 	}
 	
@@ -413,7 +419,7 @@ void manage_party ( void* data )
 				else
 				{
 					
-					if ( now > 30.f )
+					if ( now > 10.f )
 						party_data->party->setStatus ( Party::ENDED ) ;
 					
 				}

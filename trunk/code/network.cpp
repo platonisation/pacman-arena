@@ -77,7 +77,11 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) throw ( std::string )
 			
 	}
 	catch ( std::string excep )
+	{
+		
 		throw excep ;
+		
+	}
 	
 	Pck >> str ;
 	p.setMessage ( str ) ;
@@ -90,9 +94,11 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) throw ( std::string )
 	Pck >> c ;
 	p.setSlot ( c ) ;
 	
+	Character** chars ;
+	
 	// Il s'agit du premier update de la part du client, il faut allouer le tableau de personnage
 	if ( c != c2 )
-		Character** chars = new Character*[c] ;
+		chars = new Character*[c] ;
 	
 	for ( unsigned char i = 0 ; i < c ; i ++ )
 		chars[i] = NULL ;
