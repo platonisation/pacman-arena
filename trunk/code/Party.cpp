@@ -62,9 +62,11 @@ void Party::changeMap ( const std::string& map ) throw ( std::string )
 	{
 		
 		// On récupère la taille de la carte et le nombre de spawn
-		int width, height ;
+		int width, height, o1, o2 ;
 		
-		myfile >> width >> height >> _nb_spawns ;
+		myfile >> width >> height >> o1 ;
+		
+		_nb_spawns = static_cast < unsigned char > ( o1 ) ;
 		
 		_map.resize ( width ) ;
 		for ( int i = 0 ; i < width ; i ++ )
@@ -82,7 +84,9 @@ void Party::changeMap ( const std::string& map ) throw ( std::string )
 		for ( int i = 0 ; i < _nb_spawns ; i ++ )
 		{
 			
-			myfile >> _spawns[i].first >> _spawns[i].second ;
+			myfile >> o1 >> o2 ;
+			_spawns[i].first = static_cast < unsigned char > ( o1 ) ;
+			_spawns[i].second = static_cast < unsigned char > ( o2 ) ;
 			
 		}
 		
@@ -114,7 +118,7 @@ void Party::changeMap ( const std::string& map ) throw ( std::string )
 
 Character** Party::getChars ( ) const { return _chars ; }
 unsigned char Party::getStatus ( ) const { return _status ; }
-unsigned char Party::getCase ( const unsigned char x, const unsigned char y ) const { return ( x <= getWidth ( ) && y <= getHeight ( ) ) ? _map[x][y] : VOID ; }
+unsigned char Party::getCase ( const unsigned char x, const unsigned char y ) const { return ( x < getWidth ( ) && y < getHeight ( ) ) ? _map[x][y] : VOID ; }
 float Party::getTimer ( ) const { return _timer ; }
 unsigned char Party::getSlot ( ) const { return _slot ; }
 std::string Party::getMapName ( ) const { return _map_name ; }
@@ -126,7 +130,7 @@ unsigned int Party::getHeight ( ) const { return _map[0].size ( ) ; }
 
 void Party::setChars ( Character** const c ) { _chars = c ; }
 void Party::setStatus ( const unsigned char status ) { _status = status ; }
-void Party::setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) { if ( x <= getWidth ( ) && y <= getHeight ( ) ) _map[x][y] = case_status ; }
+void Party::setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) { if ( x < getWidth ( ) && y < getHeight ( ) ) _map[x][y] = case_status ; }
 void Party::setTimer ( const float timer ) { _timer = timer ; }
 void Party::setSlot ( const unsigned char slot ) { _slot = slot ; }
 void Party::setMessage ( const std::string& msg ) { _msg = msg ; }

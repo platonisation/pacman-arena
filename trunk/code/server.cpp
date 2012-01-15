@@ -185,6 +185,7 @@ void manage_party ( void* data )
 					}
 					
 					party_data->party->setMessage ( msg.str ( ) ) ;
+					party_data->party->setStatus ( Party::WAITING ) ;
 					
 				} // Temps écoulés
 				// La partie continue
