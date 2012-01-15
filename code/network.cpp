@@ -1,4 +1,5 @@
 #include "network.h"
+#include <iostream>
 
 sf::Packet& operator << ( sf::Packet& Pck, const Party& p )
 {
@@ -89,7 +90,6 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) throw ( std::string )
 	Pck >> f ;
 	p.setTimer ( f ) ;
 	
-	
 	c2 = p.getSlot ( ) ;
 	Pck >> c ;
 	p.setSlot ( c ) ;
@@ -98,22 +98,32 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) throw ( std::string )
 	
 	// Il s'agit du premier update de la part du client, il faut allouer le tableau de personnage
 	if ( c != c2 )
+	{
+		
 		chars = new Character*[c] ;
+		
+		for ( unsigned char i = 0 ; i < p.getSlot ( ) ; i ++ )
+			chars[i] = NULL ;
+		
+		p.setChars ( chars ) ;
+			
+	}
 	
-	for ( unsigned char i = 0 ; i < c ; i ++ )
-		chars[i] = NULL ;
+	chars = p.getChars ( ) ;
 	
 	for ( unsigned char i = 0 ; i < p.getSlot ( ) ; i ++ )
 	{
 		
 		Pck >> c ;
 		
-		// Le personnage n'existe pas
+		// Le personnage n'existe pas ou plus
 		if ( c == 0 )
 		{
 			
 			if ( chars[i] != NULL )
 				delete chars[i] ;
+				
+			chars[i] = NULL ;
 			
 		}
 		// Le personnage existe
