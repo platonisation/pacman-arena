@@ -36,7 +36,7 @@ class Party
 		Party ( const std::string& map_name, const float timer, const unsigned char slot ) ;
 		~Party ( ) ;
 		
-		void changeMap ( const std::string& map ) ;
+		void changeMap ( const std::string& map ) throw ( std::string ) ;
 		
 		Character** getChars ( ) const ;
 		unsigned char getStatus ( ) const ;
@@ -50,6 +50,7 @@ class Party
 		unsigned int getWidth ( ) const ;
 		unsigned int getHeight ( ) const ;
 		
+		void setChars ( const Character** c ) ;
 		void setStatus ( const unsigned char status ) ;
 		void setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) ;
 		void setTimer ( const float timer ) ;
