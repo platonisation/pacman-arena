@@ -22,21 +22,20 @@ sf::Packet& operator << ( sf::Packet& Pck, const Party& p )
 		
 	}
 	
-	Pck
-		<< p.getWidth ( )
-		<< p.getHeight ( ) ;
+	// On compte le nombre de case à envoyer
+	unsigned int cpt = 0 ;
+	for ( unsigned int i = 0 ; i < p.getWidth ( ) ; i ++ )
+		for ( unsigned int j = 0 ; j < p.getHeight ( ) ; j ++ )
+			if ( p.getCase ( i, j ) != Party::WALL )
+				cpt ++ ;
 	
-	for ( unsigned char i = 0 ; i < p.getWidth ( ) ; i ++ )
-	{
-		
-		for ( unsigned char j = 0 ; j < p.getHeight ( ) ; j ++ )
-		{
-			
-			Pck << p.getCase ( i, j ) ;
-			
-		}
-		
-	}
+	Pck << cpt ;
+	
+	// Puis on les envoie
+	for ( unsigned int i = 0 ; i < p.getWidth ( ) ; i ++ )
+		for ( unsigned int j = 0 ; j < p.getHeight ( ) ; j ++ )
+			if ( p.getCase ( i, j ) != Party::WALL )
+				Pck << i << j << p.getCase ( i, j ) ;
 	
 	return Pck ;
 	
@@ -51,7 +50,6 @@ sf::Packet& operator << ( sf::Packet& Pck, const Character& c )
 		<< c.getY ( )
 		<< c.getPoint ( )
 		<< c.getStatus ( )
-		<< c.getStatus ( )
 		<< c.getMoving ( )
 		<< c.getOrientation ( ) ;
 	
@@ -59,19 +57,27 @@ sf::Packet& operator << ( sf::Packet& Pck, const Character& c )
 	
 }
 
-sf::Packet& operator >> ( sf::Packet& Pck, Party& p )
+sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) throw ( std::string )
 {
 	
 	unsigned char c, c2 ;
+	unsigned int cpt, x, y ;
 	std::string str ;
 	float f ;
 	
 	Pck >> c ;
 	p.setStatus ( c ) ;
 	
-	Pck >> str ;
-	if ( str != p.getMapName ( ) )
-		p.changeMap ( str ) ;
+	try
+	{
+		
+		Pck >> str ;
+		if ( str != p.getMapName ( ) )
+			p.changeMap ( str ) ;
+			
+	}
+	catch ( std::string excep )
+		throw excep ;
 	
 	Pck >> str ;
 	p.setMessage ( str ) ;
@@ -84,36 +90,51 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p )
 	Pck >> c ;
 	p.setSlot ( c ) ;
 	
-	/*
+	// Il s'agit du premier update de la part du client, il faut allouer le tableau de personnage
 	if ( c != c2 )
+		Character** chars = new Character*[c] ;
 	
-	Character** chars = p.getChars ( ) ;
+	for ( unsigned char i = 0 ; i < c ; i ++ )
+		chars[i] = NULL ;
 	
 	for ( unsigned char i = 0 ; i < p.getSlot ( ) ; i ++ )
 	{
 		
-		if ( chars[i] == NULL )
-			Pck << 0 ;
-		else
-			Pck << 1 << *( chars[i] ) ;
+		Pck >> c ;
 		
-	}
-	
-	Pck
-		<< p.getWidth ( )
-		<< p.getHeight ( ) ;
-	
-	for ( unsigned char i = 0 ; i < p.getWidth ( ) ; i ++ )
-	{
-		
-		for ( unsigned char j = 0 ; j < p.getHeight ( ) ; j ++ )
+		// Le personnage n'existe pas
+		if ( c == 0 )
 		{
 			
-			Pck << p.getCase ( i, j ) ;
+			if ( chars[i] != NULL )
+				delete chars[i] ;
+			
+		}
+		// Le personnage existe
+		else
+		{
+			
+			if ( chars[i] == NULL )
+				chars[i] = new Character ;
+			
+			Pck >> *( chars[i] ) ;
 			
 		}
 		
-	}*/
+	}
+	
+	// On récupère le nombre de case que le serveur nous a envoyées
+	Pck >> cpt ;
+	
+	while ( cpt > 0 )
+	{
+		
+		Pck >> x >> y >> c ;
+		p.setCase ( x, y, c ) ;
+		
+		cpt -- ;
+		
+	}
 	
 	return Pck ;
 	
@@ -121,6 +142,32 @@ sf::Packet& operator >> ( sf::Packet& Pck, Party& p )
 
 sf::Packet& operator >> ( sf::Packet& Pck, Character& c )
 {
+	
+	std::string str ;
+	float f ;
+	unsigned int i ;
+	unsigned char ch ;
+	
+	Pck >> str ;
+	c.setName ( str ) ;
+	
+	Pck >> f ;
+	c.setX ( f ) ;
+	
+	Pck >> f ;
+	c.setY ( f ) ;
+	
+	Pck >> i ;
+	c.setPoint ( i ) ;
+	
+	Pck >> ch ;
+	c.setStatus ( ch ) ;
+	
+	Pck >> ch ;
+	c.setMoving ( ch ) ;
+	
+	Pck >> ch ;
+	c.setOrientation ( ch ) ;
 	
 	return Pck ;
 	

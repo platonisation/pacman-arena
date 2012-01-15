@@ -52,7 +52,7 @@ Party::~Party ( )
 	
 }
 
-void Party::changeMap ( const std::string& map )
+void Party::changeMap ( const std::string& map ) throw ( std::string )
 {
 	
 	// Charger une carte
@@ -106,6 +106,8 @@ void Party::changeMap ( const std::string& map )
 		_map_name = "" ;
 		_map = std::vector < std::vector < unsigned char > > ( ) ;
 		
+		throw std::string ( "Carte introuvable" ) ;
+		
 	}
 	
 }
@@ -122,6 +124,7 @@ std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > Party::
 unsigned int Party::getWidth ( ) const { return _map.size ( ) ; }
 unsigned int Party::getHeight ( ) const { return _map[0].size ( ) ; }
 
+void setChars ( const Character** c ) { _chars = c ; }
 void Party::setStatus ( const unsigned char status ) { _status = status ; }
 void Party::setCase ( const unsigned int x, const unsigned int y, const unsigned char case_status ) { if ( x <= getWidth ( ) && y <= getHeight ( ) ) _map[x][y] = case_status ; }
 void Party::setTimer ( const float timer ) { _timer = timer ; }

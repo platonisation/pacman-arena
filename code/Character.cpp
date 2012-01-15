@@ -60,5 +60,5 @@ void Character::setPoint ( const unsigned int point ) { _point = point ; }
 void Character::setStatus ( const unsigned char status ) { _status = status ; }
 void Character::setMoving ( const unsigned char moving ) { _moving = moving ; }
 void Character::setWish ( const unsigned char wish ) { _wish = wish ; }
-void Character::getOrientation ( const unsigned char orientation ) { _orientation = orientation ; }
+void Character::setOrientation ( const unsigned char orientation ) { _orientation = orientation ; }
 void Character::resetTimer ( ) { _timer.Reset ( ) ; }

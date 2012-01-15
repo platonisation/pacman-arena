@@ -53,7 +53,7 @@ class Character
 		void setStatus ( const unsigned char status ) ;
 		void setMoving ( const unsigned char moving ) ;
 		void setWish ( const unsigned char wish ) ;
-		void getOrientation ( const unsigned char orientation ) ;
+		void setOrientation ( const unsigned char orientation ) ;
 		void resetTimer ( ) ;
 		
 } ;
