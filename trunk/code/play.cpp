@@ -90,7 +90,7 @@ void manage_network ( void* data )
 			else if ( mvt2 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getRightKey ( ) ) )
 				mvt2 = Character::EAST ;
 			
-			pck_to_send << mvt1 << mvt2 ;
+			pck_to_send << static_cast < unsigned int > ( mvt1 ) << static_cast < unsigned int > ( mvt2 ) ;
 			
 		}
 		

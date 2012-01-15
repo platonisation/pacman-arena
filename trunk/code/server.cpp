@@ -86,8 +86,12 @@ void manage_client ( void* data )
 		else if ( client_cmd == "Movement" )
 		{
 			
-			unsigned char mvt1, mvt2 ;
-			pck_to_receive >> mvt1 >> mvt2 ;
+			unsigned int i1, i2 ;
+			pck_to_receive >> i1 >> i2 ;
+			
+			unsigned char
+				mvt1 = static_cast < unsigned char > ( i1 ),
+				mvt2 = static_cast < unsigned char > ( i2 ) ;
 			
 			if ( mvt1 == chars[cli_data->id]->getMoving ( ) )
 				chars[cli_data->id]->setWish ( mvt2 ) ;
@@ -209,78 +213,66 @@ void manage_party ( void* data )
 								
 								unsigned char
 										wish = chars[i]->getWish ( ),
-										moving = chars[i]->getMoving ( ) ;
+										moving = chars[i]->getMoving ( ),
+										move_to = Character::NONE ;
 								
-								// Peut-il aller au nord ?
-								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL )
+								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL && wish == Character::NORTH )
+									move_to = Character::NORTH ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL && wish == Character::SOUTH )
+									move_to = Character::SOUTH ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::WEST )
+									move_to = Character::WEST ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::EAST )
+									move_to = Character::EAST ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL && moving == Character::NORTH )
+									move_to = Character::NORTH ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL && moving == Character::SOUTH )
+									move_to = Character::SOUTH ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::WEST )
+									move_to = Character::WEST ;
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::EAST )
+									move_to = Character::EAST ;
+								
+								if ( move_to == Character::NORTH )
 								{
 									
-									// Si c'est son souhait, on le réalise
-									if ( wish == Character::NORTH )
-									{
-										
-										chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
-										chars[i]->setMoving ( wish ) ;
-										chars[i]->setWish ( moving ) ;
-										
-									}
-									// Ou si c'est sa direction actuelle, il continue
-									else if ( moving == Character::NORTH )
-										chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
+									chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
+									chars[i]->setOrientation ( Character::NORTH ) ;
 									
 								}
-								// Ou peut-il aller au sud ?
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL )
+								else if ( move_to == Character::SOUTH )
 								{
 									
-									// Si c'est son souhait, on le réalise
-									if ( wish == Character::SOUTH )
-									{
-										
-										chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
-										chars[i]->setMoving ( wish ) ;
-										chars[i]->setWish ( moving ) ;
-										
-									}
-									// Ou si c'est sa direction actuelle, il continue
-									else if ( moving == Character::SOUTH )
-										chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
+									chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
+									chars[i]->setOrientation ( Character::SOUTH ) ;
 									
 								}
-								// Peut-il aller à l'ouest ?
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
+								else if ( move_to == Character::WEST )
 								{
 									
-									// Si c'est son souhait, on le réalise
-									if ( wish == Character::WEST )
-									{
-										
-										chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
-										chars[i]->setMoving ( wish ) ;
-										chars[i]->setWish ( moving ) ;
-										
-									}
-									// Ou si c'est sa direction actuelle, il continue
-									else if ( moving == Character::WEST )
-										chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
+									chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
+									chars[i]->setOrientation ( Character::WEST ) ;
 									
 								}
-								// Ou peut-il aller à l'est ?
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
+								else if ( move_to == Character::EAST )
 								{
 									
-									// Si c'est son souhait, on le réalise
-									if ( wish == Character::SOUTH )
+									chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
+									chars[i]->setOrientation ( Character::EAST ) ;
+									
+								}
+								
+								if ( move_to != Character::NONE )
+								{
+									
+									// Si on a réalisé son souhait
+									if ( move_to == wish )
 									{
 										
-										chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
 										chars[i]->setMoving ( wish ) ;
 										chars[i]->setWish ( moving ) ;
 										
 									}
-									// Ou si c'est sa direction actuelle, il continue
-									else if ( moving == Character::SOUTH )
-										chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
 									
 								}
 								
@@ -376,12 +368,14 @@ void manage_party ( void* data )
 									{
 										
 										chars[i]->setPoint ( chars[i]->getPoint ( ) + 10 ) ;
+										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
 										
 									}
 									else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
 									{
 										
 										chars[i]->setPoint ( chars[i]->getPoint ( ) + 50 ) ;
+										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
 										chars[i]->setStatus ( Character::SUPER_PACMAN ) ;
 										chars[i]->resetTimer ( ) ;
 										
