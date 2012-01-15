@@ -50,9 +50,9 @@ sf::Packet& operator << ( sf::Packet& Pck, const Character& c )
 		<< c.getX ( )
 		<< c.getY ( )
 		<< c.getPoint ( )
-		<< c.getStatus ( )
-		<< c.getMoving ( )
-		<< c.getOrientation ( ) ;
+		<< static_cast < unsigned int > ( c.getStatus ( ) )
+		<< static_cast < unsigned int > ( c.getMoving ( ) )
+		<< static_cast < unsigned int > ( c.getOrientation ( ) ) ;
 	
 	return Pck ;
 	
@@ -162,7 +162,6 @@ sf::Packet& operator >> ( sf::Packet& Pck, Character& c )
 	std::string str ;
 	float f ;
 	unsigned int i ;
-	unsigned char ch ;
 	
 	Pck >> str ;
 	c.setName ( str ) ;
@@ -176,14 +175,14 @@ sf::Packet& operator >> ( sf::Packet& Pck, Character& c )
 	Pck >> i ;
 	c.setPoint ( i ) ;
 	
-	Pck >> ch ;
-	c.setStatus ( ch ) ;
+	Pck >> i ;
+	c.setStatus ( static_cast < unsigned char > ( i ) ) ;
 	
-	Pck >> ch ;
-	c.setMoving ( ch ) ;
+	Pck >> i ;
+	c.setMoving ( static_cast < unsigned char > ( i ) ) ;
 	
-	Pck >> ch ;
-	c.setOrientation ( ch ) ;
+	Pck >> i ;
+	c.setOrientation ( static_cast < unsigned char > ( i ) ) ;
 	
 	return Pck ;
 	
