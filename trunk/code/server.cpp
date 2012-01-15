@@ -38,14 +38,16 @@ void manage_client ( void* data )
 	ClientData* cli_data = static_cast < ClientData* > ( data ) ;
 	
 	// On crée le personnage du client
+	cli_data->p_mutex->Lock ( ) ;
 	Character** chars = cli_data->party->getChars ( ) ;
 	chars[cli_data->id] = new Character ;
 	
 	std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = cli_data->party->getSpawns ( ) ;
 	unsigned char nb = rand ( ) % spawns.first ;
 	
-	chars[cli_data->id]->setX ( spawns.second[nb].first ) ;
-	chars[cli_data->id]->setY ( spawns.second[nb].second ) ;
+	chars[cli_data->id]->setX ( static_cast < float > ( spawns.second[nb].first ) ) ;
+	chars[cli_data->id]->setY ( static_cast < float > ( spawns.second[nb].second ) ) ;
+	cli_data->p_mutex->Unlock ( ) ;
 	
 	// Boucle pour répondre au client
 	bool quit = false ;
@@ -53,9 +55,53 @@ void manage_client ( void* data )
 	{
 		
 		cli_data->p_mutex->Lock ( ) ;
+		std::cout << "Obtention du mutex pour le client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
 		
-		Packet pck ;
-		pck << (*cli_data->party) ;
+		if ( cli_data->party->getStatus ( ) == Party::ENDED )
+			quit = true ;
+		
+		// Envoie de données
+		Packet pck_to_send ;
+		pck_to_send << std::string ( "Data" ) << ( *cli_data->party ) ;
+		
+		(*cli_data->client)->first.Send ( pck_to_send ) ;
+		std::cout << "Envoie de données pour le client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
+		
+		// Réception des données
+		Packet pck_to_receive ;
+		(*cli_data->client)->first.Receive ( pck_to_receive ) ;
+		
+		std::string client_cmd ;
+		pck_to_receive >> client_cmd ;
+		std::cout << "Réception de données du client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
+		
+		if ( client_cmd == "Quit" )
+		{
+			
+			delete chars[cli_data->id] ;
+			chars[cli_data->id] = NULL ;
+			quit = true ;
+			
+		}
+		else if ( client_cmd == "Movement" )
+		{
+			
+			unsigned char mvt1, mvt2 ;
+			pck_to_receive >> mvt1 >> mvt2 ;
+			
+			if ( mvt1 == chars[cli_data->id]->getMoving ( ) )
+				chars[cli_data->id]->setWish ( mvt2 ) ;
+			else if ( mvt2 == chars[cli_data->id]->getMoving ( ) )
+				chars[cli_data->id]->setWish ( mvt1 ) ;
+			else
+			{
+				
+				chars[cli_data->id]->setMoving ( mvt1 ) ;
+				chars[cli_data->id]->setWish ( mvt2 ) ;
+				
+			}
+			
+		}
 		
 		cli_data->p_mutex->Unlock ( ) ;
 		
@@ -64,7 +110,7 @@ void manage_client ( void* data )
 	}
 	
 	// Déconnexion du client
-	std::cout << "Déconnexion du client : " << (*cli_data->client)->second << std::endl ;
+	std::cout << "Déconnexion du client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
 	(*cli_data->client)->first.Close ( ) ;
 	
 	// Libération de la mémoire
@@ -83,7 +129,7 @@ void manage_party ( void* data )
 	
 	// On récupère les données
 	PartyData* party_data = static_cast < PartyData* > ( data ) ;
-	party_data->party->setMessage ( "En attente d'autres joueurs" ) ;
+	party_data->party->setMessage ( "Partie en attente d'autres joueurs !" ) ;
 	
 	// On déclare les varibles pour gérer le temps
 	Clock clk ;
@@ -98,7 +144,7 @@ void manage_party ( void* data )
 		now = clk.GetElapsedTime ( ) ;
 		
 		// Si ça fait 50 ms, on met à jour la partie
-		if ( 0.050f < now-last_update )
+		if ( 0.050f < now - last_update )
 		{
 			
 			// On bloque l'accès à la partie
@@ -245,7 +291,7 @@ void manage_party ( void* data )
 							{
 								
 								// Si c'est bien un autre personnage et qu'il y a collision
-								if ( j != i && abs ( chars[i]->getY ( ) - chars[j]->getY ( ) ) < 1.f && abs ( chars[i]->getX ( ) - chars[j]->getX ( ) ) < 1.f )
+								if ( j != i && chars[j] != NULL && abs ( chars[i]->getY ( ) - chars[j]->getY ( ) ) < 1.f && abs ( chars[i]->getX ( ) - chars[j]->getX ( ) ) < 1.f )
 								{
 									
 									// i se fait manger, respawn en fantôme et j devient le pacman
@@ -501,6 +547,7 @@ int main ( int argc, char *argv[] )
 	p_data->party = &party ;
 	p_data->p_mutex = &p_mutex ;
 	*p_thread = new Thread ( manage_party, static_cast < void* > ( p_data ) ) ;
+	(*p_thread)->Launch ( ) ;
 	
 	// On alloue les sockets pour les clients et différentes variables associées
 	std::cout << "Création des sockets accueillant les clients" << std::endl ;
@@ -605,6 +652,8 @@ int main ( int argc, char *argv[] )
 	delete[] threads ;
 	delete[] clients ;
 	delete new_client ;
+	if ( *p_thread != NULL )
+		delete (*p_thread) ;
 	delete p_thread ;
 	
 	return EXIT_SUCCESS ;

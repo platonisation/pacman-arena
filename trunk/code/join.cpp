@@ -71,8 +71,25 @@ int join ( RenderWindow& window, myOption& opt, SocketTCP& sck )
 							case Key::Return:   // touche entrées
 								if (sck.Connect(8910, ip) == Socket::Done)
 								{
-									quitter = true;
-									action = 5;
+									
+									Sleep ( 0.050f ) ;
+									
+									char* c = new char[2] ;
+									std::size_t r ;
+									
+									sck.Receive ( c, static_cast < std::size_t > ( sizeof ( char ) * 2 ), r ) ;
+									
+									if ( c[0] == '0' )
+									{
+										quitter = true;
+										action = 1 ;
+									}
+									else
+									{
+										quitter = true;
+										action = 5;
+									}
+									
 								}
 								
 							break;

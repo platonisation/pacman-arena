@@ -6,7 +6,7 @@ EXEC=Pacman_Arena Pacman_Serv
 all: $(EXEC)
 
 Pacman_Arena: main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o network.o Pacman_Serv
-	$(CC) -o $@ main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o $(LDFLAGS)
+	$(CC) -o $@ main.o create.o join.o menu.o play.o option.o myOption.o Party.o Character.o network.o $(LDFLAGS)
 
 Pacman_Serv: server.o Party.o Character.o network.o
 	$(CC) -o $@ server.o Party.o Character.o network.o $(LDFLAGS)

@@ -57,19 +57,19 @@ int main ( int argc, char *argv[] )
 		case 3 :
 			// Créer
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Créer" << std::endl ;
-			action = create ( window, opt, sck );
+			action = create ( window, opt, sck ) ;
 			break ;
 			
 		case 4 :
 			// Rejoindre
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Rejoindre" << std::endl ;
-			action = join ( window, opt, sck );
+			action = join ( window, opt, sck ) ;
 			break ;
 		
 		case 5 :
 			// En jeu
 			if ( opt.getDebug ( ) ) std::cout << "Ouverture Jouer" << std::endl ;
-			action = 1 ;
+			action = play ( window, opt, sck ) ;
 			break ;
 			
         default :

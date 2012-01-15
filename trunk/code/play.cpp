@@ -4,6 +4,7 @@
 #include <SFML/System.hpp>
 #include "Party.h"
 #include <sstream>
+#include "network.h"
 
 std::string int2str ( int i )
 {
@@ -22,14 +23,90 @@ struct NetworkData
 	SocketTCP* sck ;
 	Party* party ;
 	Mutex* p_mutex ;
+	const Input* ipt ;
+	myOption* opt ;
 } ;
 
 void manage_network ( void* data )
 {
 	
 	NetworkData* net_data = static_cast < NetworkData* > ( data ) ;
+	bool quitter = false ;
 	
+	while ( ! quitter )
+	{
+		
+		net_data->p_mutex->Lock ( ) ;
+		if ( net_data->opt->getDebug ( ) ) std::cout << "Mutex obtenu par le réseau" << std::endl ;
+		
+		// Réception des données
+		Packet pck_to_receive ;
+		net_data->sck->Receive ( pck_to_receive ) ;
+		
+		std::string client_cmd ;
+		pck_to_receive >> client_cmd ;
+		
+		if ( client_cmd == "Data" )
+		{
+			
+			if ( net_data->opt->getDebug ( ) ) std::cout << "Données de type Data reçus du serveur" << std::endl ;
+			pck_to_receive >> *(net_data->party) ;
+			if ( net_data->opt->getDebug ( ) ) std::cout << "Données de type Data bien analysées" << std::endl ;
+			
+		}
+		
+		// Envoie de données
+		Packet pck_to_send ;
+		
+		if ( *(net_data->quit) == true )
+		{
+			
+			pck_to_send << std::string ( "Quit" ) ;
+			quitter = true ;
+			
+		}
+		else
+		{
+			
+			pck_to_send << std::string ( "Movement" ) ;
+			
+			unsigned char mvt1 = Character::NONE, mvt2 = Character::NONE ;
+			
+			if ( net_data->ipt->IsKeyDown ( net_data->opt->getUpKey ( ) ) )
+				mvt1 = Character::NORTH ;
+			
+			if ( mvt1 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getDownKey ( ) ) )
+				mvt1 = Character::SOUTH ;
+			else if ( net_data->ipt->IsKeyDown ( net_data->opt->getDownKey ( ) ) )
+				mvt2 = Character::SOUTH ;
+			
+			if ( mvt1 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getLeftKey ( ) ) )
+				mvt1 = Character::WEST ;
+			else if ( mvt2 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getLeftKey ( ) ) )
+				mvt2 = Character::WEST ;
+			
+			if ( mvt1 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getRightKey ( ) ) )
+				mvt1 = Character::EAST ;
+			else if ( mvt2 == Character::NONE && net_data->ipt->IsKeyDown ( net_data->opt->getRightKey ( ) ) )
+				mvt2 = Character::EAST ;
+			
+			pck_to_send << mvt1 << mvt2 ;
+			
+		}
+		
+		net_data->sck->Send ( pck_to_send ) ;
+		
+		if ( net_data->party->getStatus ( ) == Party::ENDED )
+			*(net_data->quit) = true ;
+		
+		net_data->p_mutex->Unlock ( ) ;
+		
+		Sleep ( 0.050f ) ;
+		
+	}
 	
+	// Déconnexion du client
+	net_data->sck->Close ( ) ;
 	
 }
 
@@ -54,10 +131,14 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 	net_data.sck = & sck ;
 	net_data.party = & p ;
 	net_data.p_mutex = & p_mutex ;
+	net_data.ipt = &window.GetInput ( ) ;
+	net_data.opt = &opt ;
 	Thread t ( manage_network, static_cast < void* > ( & net_data ) ) ;
 	t.Launch ( ) ;
 	
 	Clock clk ;
+	
+	if ( opt.getDebug ( ) ) std::cout << "Chargement des images" << std::endl ;
 	
     // Chargement des sprites de fantomes
     Image ghost_image[5][2] ;
@@ -152,17 +233,22 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 		
 	}
 	
+	if ( opt.getDebug ( ) ) std::cout << "Chargement des images terminé" << std::endl ;
+	
 	// Fin du chargement des sprites
 	
     while ( ! quitter ) // Boucle d'affichage
     {
 		
 		p_mutex.Lock ( ) ;
+		if ( opt.getDebug ( ) ) std::cout << "Mutex obtenu par l'afficheur" << std::endl ;
 		
 		window.Clear ( ) ;
 		
 		if ( p.getStatus ( ) == Party::WAITING )
 		{
+			
+			if ( opt.getDebug ( ) ) std::cout << "Partie en attente" << std::endl ;
 			
 			String msg = String ( p.getMessage ( ) ) ;
 			
@@ -254,6 +340,21 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 				
 			}
 			
+			String msg = String ( "Timer :" ) ;
+			msg.SetColor ( Color ( 255, 255, 255, 255 ) ) ;
+			
+			msg.SetX ( 50 ) ;
+			msg.SetY ( 50 ) ;
+			
+			window.Draw ( msg ) ;
+			
+			msg.SetText ( int2str ( static_cast < int > ( p.getTimer ( ) ) ) ) ;
+			
+			msg.SetX ( 75 ) ;
+			msg.SetY ( 85 ) ;
+			
+			window.Draw ( msg ) ;
+			
 			// Affiche les personnages dans les infos et sur la carte
 			for ( unsigned char i = 0 ; i < p.getSlot ( ) ; i ++ )
 			{
@@ -261,11 +362,10 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 				if ( chars[i] == NULL )
 				{
 					
-					String msg = String ( "Slot libre" ) ;
+					msg.SetText ( "Slot libre" ) ;
 					
-					msg.SetColor ( Color ( 255, 255, 255, 255 ) ) ;
 					msg.SetX ( 100 ) ;
-					msg.SetY ( 100 * static_cast < int > ( i + 1 ) ) ;
+					msg.SetY ( 100 * i + 200 ) ;
 					
 					window.Draw ( msg ) ;
 					
@@ -273,17 +373,16 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 				else
 				{
 					
-					String msg = String ( chars[i]->getName ( ) ) ;
+					msg.SetText ( chars[i]->getName ( ) ) ;
 					
-					msg.SetColor ( Color ( 255, 255, 255, 255 ) ) ;
 					msg.SetX ( 100 ) ;
-					msg.SetY ( ( window.GetHeight ( ) + 30 ) / 2 ) ;
+					msg.SetY ( 100 * i + 200 ) ;
 					
 					window.Draw ( msg ) ;
 					
 					msg.SetText ( "Points : " + int2str ( chars[i]->getPoint ( ) ) ) ;
-					msg.SetX ( 150 ) ;
-					msg.SetY ( ( window.GetHeight ( ) + 30 ) / 2 + 40 ) ;
+					msg.SetX ( 100 ) ;
+					msg.SetY ( 100 * i + 230 ) ;
 					
 					window.Draw ( msg ) ;
 					
@@ -301,7 +400,7 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					
 					// Dessin dans les infos
 					spt->Resize ( 50, 50 ) ;
-					spt->SetPosition ( 25, ( window.GetHeight ( ) + 30 ) / 2 ) ;
+					spt->SetPosition ( 25, 100 * i + 200 ) ;
 					
 					window.Draw ( *spt ) ;
 					
@@ -319,6 +418,8 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 			
 		}
 		
+		p_mutex.Unlock ( ) ;
+		
 		window.Display ( ) ;
 		
         Event event ;
@@ -334,26 +435,11 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 			break;
 			
 			case Event::KeyPressed : // Appui sur une touche du clavier
-				if ( event.Key.Code == opt.getUpKey() ) // Appui sur la touche Haut
+				if ( event.Key.Code == opt.getCancelKey() ) // Appui sur la touche Haut
 				{
-					if ( action == 0 )
-						action = 2 ;
-					else if ( action == 4 )
-						action = 0 ;
-					else
-						action ++ ;
-				}
-				else if ( event.Key.Code == opt.getDownKey() ) // Appui sur la touche Bas
-				{
-					if ( action == 0 )
-						action = 4 ;
-					else if ( action == 2 )
-						action = 0 ;
-					else
-						action -- ;
-				}
-				else if ( event.Key.Code == opt.getValidKey() ) // Appui sur la touche Valider
+					action = 1 ;
 					quitter = true ;
+				}
 			break;
 			
 			default :
@@ -362,8 +448,6 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 			} // Switch des évènements
 			
 		} // Boucle des évènements
-		
-		p_mutex.Unlock ( ) ;
 		
 		Sleep ( 0.050f ) ;
 		
