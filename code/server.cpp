@@ -1,10 +1,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <utility>
 #include <vector>
 #include <cmath>
+#include <ctime>
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 #include "Party.h"
@@ -33,6 +35,16 @@ void manage_client ( void* data )
 	
 	// On récupère les données
 	ClientData* cli_data = static_cast < ClientData* > ( data ) ;
+	
+	// On crée le personnage du client
+	Character** chars = cli_data->party->getChars ( ) ;
+	chars[cli_data->id] = new Character ;
+	
+	std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = cli_data->party->getSpawns ( ) ;
+	unsigned char nb = rand ( ) % spawns.first ;
+	
+	chars[cli_data->id]->setX ( spawns.second[nb].first ) ;
+	chars[cli_data->id]->setY ( spawns.second[nb].second ) ;
 	
 	// Boucle pour répondre au client
 	bool quit = false ;
@@ -71,203 +83,348 @@ void manage_party ( void* data )
 	Clock clk ;
 	float last_update = 0.f ;
 	float now ;
+	bool scoring = false ;
 	
 	// Boucle de mise à jour de la partie
 	while ( party_data->party->getStatus ( ) != Party::ENDED )
 	{
 		
-		// On bloque l'accès à la partie
-		party_data->p_mutex->Lock ( ) ;
 		now = clk.GetElapsedTime ( ) ;
 		
-		// On fait les traitement nécessaire
-		// Si la partie est en cours
-		if ( party_data->party->getStatus ( ) == Party::PLAYING )
+		// Si ça fait 50 ms, on met à jour la partie
+		if ( 0.050f < now-last_update )
 		{
 			
-			std::pair < unsigned char, Character* > chars = party_data->party->getChars ( ) ;
+			// On bloque l'accès à la partie
+			party_data->p_mutex->Lock ( ) ;
 			
-			// On parcourt la liste des personnages
-			for ( unsigned char i = 0 ; i < chars.first ; i ++ )
+			// On fait les traitements nécessaires
+			// Si la partie est en cours
+			// ~ normalement terminé
+			// - reste à vérifier la gestion du souhait de déplacement et de l'orientation du personnage
+			if ( party_data->party->getStatus ( ) == Party::PLAYING )
 			{
 				
-				// On déplace le personnage par tranche de 50 ms + gestion des collissions avec les murs ~ normalement terminé
-				for ( float j = 0.050f ; j < now - last_update ; j += 0.050f )
+				party_data->party->setTimer ( 180.f - now ) ;
+				Character** chars = party_data->party->getChars ( ) ;
+				
+				// Temps écoulés
+				if ( now > 180.f )
 				{
 					
-					unsigned char
-							wish = chars.second[i].getWish ( ),
-							moving = chars.second[i].getMoving ( ) ;
+					scoring = true ;
+					clk.Reset ( ) ;
+					now = 0.f ;
 					
-					// Peut-il aller au nord ?
-					if ( party_data->party->getCase ( static_cast < unsigned char > ( chars.second[i].getX ( ) ), static_cast < unsigned char > ( chars.second[i].getY ( ) - 0.1f ) ) != Party::WALL )
+					std::ostringstream msg ;
+					msg << "Partie terminée !" << std::endl << "Score :" << std::endl ;
+					
+					for ( unsigned char i = 0 ; i < party_data->party->getSlot ( ) ; i ++ )
 					{
 						
-						// Si c'est son souhait, on le réalise
-						if ( wish == Character::NORTH )
+						// Si le personnage i existe
+						if ( chars[i] != NULL )
 						{
 							
-							chars.second[i].setY ( chars.second[i].getY ( ) - 0.1f ) ;
-							chars.second[i].setMoving ( wish ) ;
-							chars.second[i].setWish ( moving ) ;
+							msg << " - " << chars[i]->getName ( ) << " : " << chars[i]->getPoint ( ) << std::endl ;
 							
 						}
-						// Ou si c'est sa direction actuelle, il continue
-						else if ( moving == Character::NORTH )
-							chars.second[i].setY ( chars.second[i].getY ( ) - 0.1f ) ;
-						
-					}
-					// Ou peut-il aller au sud ?
-					else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars.second[i].getX ( ) ), static_cast < unsigned char > ( chars.second[i].getY ( ) + 1.1f ) ) != Party::WALL )
-					{
-						
-						// Si c'est son souhait, on le réalise
-						if ( wish == Character::SOUTH )
-						{
-							
-							chars.second[i].setY ( chars.second[i].getY ( ) + 0.1f ) ;
-							chars.second[i].setMoving ( wish ) ;
-							chars.second[i].setWish ( moving ) ;
-							
-						}
-						// Ou si c'est sa direction actuelle, il continue
-						else if ( moving == Character::SOUTH )
-							chars.second[i].setY ( chars.second[i].getY ( ) + 0.1f ) ;
-						
-					}
-					// Peut-il aller à l'ouest ?
-					else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars.second[i].getX ( ) - 0.1f ), static_cast < unsigned char > ( chars.second[i].getY ( ) ) ) != Party::WALL )
-					{
-						
-						// Si c'est son souhait, on le réalise
-						if ( wish == Character::WEST )
-						{
-							
-							chars.second[i].setX ( chars.second[i].getX ( ) - 0.1f ) ;
-							chars.second[i].setMoving ( wish ) ;
-							chars.second[i].setWish ( moving ) ;
-							
-						}
-						// Ou si c'est sa direction actuelle, il continue
-						else if ( moving == Character::WEST )
-							chars.second[i].setX ( chars.second[i].getX ( ) - 0.1f ) ;
-						
-					}
-					// Ou peut-il aller à l'est ?
-					else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars.second[i].getX ( ) + 1.1f ), static_cast < unsigned char > ( chars.second[i].getY ( ) ) ) != Party::WALL )
-					{
-						
-						// Si c'est son souhait, on le réalise
-						if ( wish == Character::SOUTH )
-						{
-							
-							chars.second[i].setX ( chars.second[i].getX ( ) + 0.1f ) ;
-							chars.second[i].setMoving ( wish ) ;
-							chars.second[i].setWish ( moving ) ;
-							
-						}
-						// Ou si c'est sa direction actuelle, il continue
-						else if ( moving == Character::SOUTH )
-							chars.second[i].setX ( chars.second[i].getX ( ) + 0.1f ) ;
 						
 					}
 					
-				} // Déplacement du personnage + gestion des collisions avec les murs
-				
-				// On regarde si le personnage est entrée en collission avec un autre ~ reste le respawn
-				for ( unsigned char j = i + 1 ; j < chars.first ; j ++ )
+					party_data->party->setMessage ( msg.str ( ) ) ;
+					
+				} // Temps écoulés
+				// La partie continue
+				else
 				{
 					
-					// Si c'est bien un autre personnage et qu'il y a collision
-					if ( j != i && abs ( chars.second[i].getY ( ) - chars.second[j].getY ( ) ) < 1.f && abs ( chars.second[i].getX ( ) - chars.second[j].getX ( ) ) < 1.f )
+					bool pacman_spawn = false ;
+					
+					// On parcourt la liste des personnages
+					for ( unsigned char i = 0 ; i < party_data->party->getSlot ( ) ; i ++ )
 					{
 						
-						// i se fait manger, respawn en fantôme et j devient le pacman
-						if ( chars.second[i].getStatus ( ) == Character::PACMAN && chars.second[j].getStatus ( ) == Character::GHOST )
+						// Si le personnage i existe
+						if ( chars[i] != NULL )
+						{
+						
+							// On déplace le personnage par tranche de 50 ms + gestion des collissions avec les murs
+							// ~ reste à vérifier la gestion du souhait de déplacement et de l'orientation du personnage
+							for ( float j = 0.050f ; j < now - last_update ; j += 0.050f )
+							{
+								
+								unsigned char
+										wish = chars[i]->getWish ( ),
+										moving = chars[i]->getMoving ( ) ;
+								
+								// Peut-il aller au nord ?
+								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL )
+								{
+									
+									// Si c'est son souhait, on le réalise
+									if ( wish == Character::NORTH )
+									{
+										
+										chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
+										chars[i]->setMoving ( wish ) ;
+										chars[i]->setWish ( moving ) ;
+										
+									}
+									// Ou si c'est sa direction actuelle, il continue
+									else if ( moving == Character::NORTH )
+										chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
+									
+								}
+								// Ou peut-il aller au sud ?
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL )
+								{
+									
+									// Si c'est son souhait, on le réalise
+									if ( wish == Character::SOUTH )
+									{
+										
+										chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
+										chars[i]->setMoving ( wish ) ;
+										chars[i]->setWish ( moving ) ;
+										
+									}
+									// Ou si c'est sa direction actuelle, il continue
+									else if ( moving == Character::SOUTH )
+										chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
+									
+								}
+								// Peut-il aller à l'ouest ?
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
+								{
+									
+									// Si c'est son souhait, on le réalise
+									if ( wish == Character::WEST )
+									{
+										
+										chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
+										chars[i]->setMoving ( wish ) ;
+										chars[i]->setWish ( moving ) ;
+										
+									}
+									// Ou si c'est sa direction actuelle, il continue
+									else if ( moving == Character::WEST )
+										chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
+									
+								}
+								// Ou peut-il aller à l'est ?
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
+								{
+									
+									// Si c'est son souhait, on le réalise
+									if ( wish == Character::SOUTH )
+									{
+										
+										chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
+										chars[i]->setMoving ( wish ) ;
+										chars[i]->setWish ( moving ) ;
+										
+									}
+									// Ou si c'est sa direction actuelle, il continue
+									else if ( moving == Character::SOUTH )
+										chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
+									
+								}
+								
+							} // Déplacement du personnage + gestion des collisions avec les murs
+							
+							// On regarde si le personnage est entrée en collission avec un autre
+							// ~ normalement terminé - à tester
+							for ( unsigned char j = i + 1 ; j < party_data->party->getSlot ( ) ; j ++ )
+							{
+								
+								// Si c'est bien un autre personnage et qu'il y a collision
+								if ( j != i && abs ( chars[i]->getY ( ) - chars[j]->getY ( ) ) < 1.f && abs ( chars[i]->getX ( ) - chars[j]->getX ( ) ) < 1.f )
+								{
+									
+									// i se fait manger, respawn en fantôme et j devient le pacman
+									if ( chars[i]->getStatus ( ) == Character::PACMAN && chars[j]->getStatus ( ) == Character::GHOST )
+									{
+										
+										chars[i]->setStatus ( Character::GHOST ) ;
+										chars[j]->setStatus ( Character::PACMAN ) ;
+										
+										// Respawn du personnage i
+										std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = party_data->party->getSpawns ( ) ;
+										unsigned char nb = rand ( ) % spawns.first ;
+										
+										chars[i]->setX ( spawns.second[nb].first ) ;
+										chars[i]->setY ( spawns.second[nb].second ) ;
+										
+									}
+									// l'inverse
+									else if ( chars[i]->getStatus ( ) == Character::GHOST && chars[j]->getStatus ( ) == Character::PACMAN )
+									{
+										
+										chars[j]->setStatus ( Character::GHOST ) ;
+										chars[i]->setStatus ( Character::PACMAN ) ;
+										
+										// Respawn du personnage j
+										std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = party_data->party->getSpawns ( ) ;
+										unsigned char nb = rand ( ) % spawns.first ;
+										
+										chars[j]->setX ( spawns.second[nb].first ) ;
+										chars[j]->setY ( spawns.second[nb].second ) ;
+										
+									}
+									// i est un fantôme mais ce fait manger par j, super pacman
+									else if ( chars[i]->getStatus ( ) == Character::GHOST && chars[j]->getStatus ( ) == Character::SUPER_PACMAN )
+									{
+										
+										chars[j]->setPoint ( chars[j]->getPoint ( ) + 100 ) ;
+										
+										// Respawn du personnage i
+										std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = party_data->party->getSpawns ( ) ;
+										unsigned char nb = rand ( ) % spawns.first ;
+										
+										chars[i]->setX ( spawns.second[nb].first ) ;
+										chars[i]->setY ( spawns.second[nb].second ) ;
+										
+									}
+									// l'inverse
+									else if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN && chars[j]->getStatus ( ) == Character::GHOST )
+									{
+										
+										chars[i]->setPoint ( chars[i]->getPoint ( ) + 100 ) ;
+										
+										// Respawn du personnage j
+										std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = party_data->party->getSpawns ( ) ;
+										unsigned char nb = rand ( ) % spawns.first ;
+										
+										chars[j]->setX ( spawns.second[nb].first ) ;
+										chars[j]->setY ( spawns.second[nb].second ) ;
+										
+									}
+									
+								}
+								
+							} // Collisions avec les autres personnages
+							
+							// On regarde si le personnage peut manger des points
+							// ~ normalement terminé - à tester
+							if ( chars[i]->getStatus ( ) == Character::PACMAN || chars[i]->getStatus ( ) == Character::SUPER_PACMAN )
+							{
+								
+								pacman_spawn = true ;
+								
+								float
+									x = chars[i]->getX ( ),
+									y = chars[i]->getY ( ) ;
+								
+								if ( x == floor ( x ) && y == floor ( y ) )
+								{
+									
+									if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::PAC_POINT )
+									{
+										
+										chars[i]->setPoint ( chars[i]->getPoint ( ) + 10 ) ;
+										
+									}
+									else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
+									{
+										
+										chars[i]->setPoint ( chars[i]->getPoint ( ) + 50 ) ;
+										chars[i]->setStatus ( Character::SUPER_PACMAN ) ;
+										chars[i]->resetTimer ( ) ;
+										
+									}
+									
+								}
+								
+							} // Collision avec les points
+							
+							// On regarde si le personnage est Super Pacman et si son timer a expiré
+							// ~ normalement terminé - à tester
+							if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN && chars[i]->getTimer ( ) > 10.f )
+							{
+								
+								chars[i]->setStatus ( Character::PACMAN ) ;
+								
+							}
+							
+						} // Personnage i existant
+						
+					} // Parcourt de la liste des personnages
+					
+					// Fais spawn Pacman au bout de 30 secondes
+					if ( ! pacman_spawn && now > 30.f )
+					{
+						
+						bool trouve = false ;
+						
+						while ( ! trouve )
 						{
 							
-							chars.second[i].setStatus ( Character::GHOST ) ;
-							chars.second[j].setStatus ( Character::PACMAN ) ;
+							unsigned char pacman_id = static_cast < unsigned char > ( rand ( ) ) % party_data->party->getSlot ( ) ;
 							
-							// ~ Respawn du personnage i
-							
-						}
-						// l'inverse
-						else if ( chars.second[i].getStatus ( ) == Character::GHOST && chars.second[j].getStatus ( ) == Character::PACMAN )
-						{
-							
-							chars.second[j].setStatus ( Character::GHOST ) ;
-							chars.second[i].setStatus ( Character::PACMAN ) ;
-							
-							// ~ Respawn du personnage j
-							
-						}
-						// i est un fantôme mais ce fait manger par j, super pacman
-						else if ( chars.second[i].getStatus ( ) == Character::GHOST && chars.second[j].getStatus ( ) == Character::SUPER_PACMAN )
-						{
-							
-							chars.second[j].setPoint ( chars.second[j].getPoint ( ) + 100 ) ;
-							
-							// ~ Respawn du personnage i
-							
-						}
-						// l'inverse
-						else if ( chars.second[i].getStatus ( ) == Character::SUPER_PACMAN && chars.second[j].getStatus ( ) == Character::GHOST )
-						{
-							
-							chars.second[i].setPoint ( chars.second[i].getPoint ( ) + 100 ) ;
-							
-							// ~ Respawn du personnage j
+							if ( chars[pacman_id] != NULL )
+							{
+								
+								chars[pacman_id]->setStatus ( Character::PACMAN ) ;
+								trouve = true ;
+								
+							}
 							
 						}
 						
 					}
 					
-				} // Collisions avec les autres personnages
+				}
 				
-				// On regarde si le personnage peut manger des points ~ reste le timer du super pac man
-				if ( chars.second[i].getStatus ( ) == Character::PACMAN || chars.second[i].getStatus ( ) == Character::SUPER_PACMAN )
+			} // Partie en cours
+			// Partie en attente
+			else if ( party_data->party->getStatus ( ) == Party::WAITING )
+			{
+				
+				if ( ! scoring )
 				{
 					
-					float
-						x = chars.second[i].getX ( ),
-						y = chars.second[i].getY ( ) ;
+					unsigned char nb_players = 0 ;
+					Character** chars = party_data->party->getChars ( ) ;
 					
-					if ( x == floor ( x ) && y == floor ( y ) )
+					for ( unsigned char i = 0 ; i < party_data->party->getSlot ( ) ; i ++ )
 					{
 						
-						if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::PAC_POINT )
+						if ( chars[i] != NULL )
 						{
 							
-							chars.second[i].setPoint ( chars.second[i].getPoint ( ) + 10 ) ;
-							
-						}
-						else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
-						{
-							
-							chars.second[i].setPoint ( chars.second[i].getPoint ( ) + 50 ) ;
-							chars.second[i].setStatus ( Character::SUPER_PACMAN ) ;
-							// ~ lancer le timer du super pacman
+							nb_players ++ ;
 							
 						}
 						
 					}
 					
-				} // Collision avec les points
+					// Si tous les joueurs sont rendus
+					if ( nb_players == party_data->party->getSlot ( ) || clk.GetElapsedTime ( ) > 30.f )
+					{
+						
+						party_data->party->setStatus ( Party::PLAYING ) ;
+						clk.Reset ( ) ;
+						now = 0.f ;
+						
+					}
+					
+				}
+				else
+				{
+					
+					if ( now > 30.f )
+						party_data->party->setStatus ( Party::ENDED ) ;
+					
+				}
 				
-			} // Parcourt de la liste des personnages
+			} // Partie en attente
 			
-		} // Partie en cours
-		else if ( party_data->party->getStatus ( ) == Party::WAITING )
-		{
+			// Débloque l'accès à la partie
+			last_update = now ;
+			party_data->p_mutex->Unlock ( ) ;
 			
-			
-			
-		} // Partie en attente
-		
-		// Débloque l'accès à la partie
-		last_update = now ;
-		party_data->p_mutex->Unlock ( ) ;
+		} // update car plus de 50 ms de retard
 		
 		// On patiente 20 ms
 		Sleep ( 0.020f ) ;
@@ -275,8 +432,8 @@ void manage_party ( void* data )
 	} // Boucle mise à jour de la partie
 	
 	// Libération de la mémoire
-	delete (*party_data->thread) ;
-	(*party_data->thread) = NULL ;
+	delete ( *party_data->thread ) ;
+	( *party_data->thread ) = NULL ;
 	
 }
 
@@ -285,6 +442,8 @@ int main ( int argc, char *argv[] )
 	
 	unsigned char slot ;
 	std::string map_path ;
+	
+	srand ( time ( NULL ) ) ;
 	
 	// Si on a le bon nombre de paramètres
 	if ( argc == 3 )
@@ -429,6 +588,9 @@ int main ( int argc, char *argv[] )
 	for ( unsigned char i = 0 ; i < slot ; i ++ )
 	{
 		
+		if ( threads[i] != NULL )
+			threads[i]->Wait ( ) ;
+			
 		delete threads[i] ;
 		delete clients[i] ;
 		

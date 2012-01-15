@@ -1,10 +1,14 @@
+#ifndef __NETWORK_H__
+
+#define __NETWORK_H__
 #include <SFML/Network.hpp>
 #include "Party.h"
 
 // Pour récupérer ou envoyer une requête
-sf::Packet& operator << ( sf::Packet& Packet, const Query& q ) ;
-sf::Packet& operator >> ( sf::Packet& Packet, Query& q ) ;
+sf::Packet& operator << ( sf::Packet& Pck, const Party& p ) ;
+sf::Packet& operator >> ( sf::Packet& Pck, Party& p ) ;
 
-// Pour récupérer ou envoyer une réponse
-sf::Packet& operator << ( sf::Packet& Packet, const Response& p ) ;
-sf::Packet& operator >> ( sf::Packet& Packet, Response& p ) ;
+sf::Packet& operator << ( sf::Packet& Pck, const Character& c ) ;
+sf::Packet& operator >> ( sf::Packet& Pck, Character& c ) ;
+
+#endif
