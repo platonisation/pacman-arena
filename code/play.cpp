@@ -198,7 +198,7 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 	Image super_pacman_image[2] ;
 	Sprite super_pacman_sprite[2] ;
 	
-	if ( ! super_pacman_image[0].LoadFromFile ( "pics/Pac1.png" ) || ! super_pacman_image[1].LoadFromFile ( "pics/Pac2.png" ) ) // Si le chargement du fichier a échoué
+	if ( ! super_pacman_image[0].LoadFromFile ( "pics/SuperPac1.png" ) || ! super_pacman_image[1].LoadFromFile ( "pics/SuperPac2.png" ) ) // Si le chargement du fichier a échoué
 	{
 		
 		if ( opt.getDebug ( ) ) std::cout << "Image manquante" << std::endl ;
