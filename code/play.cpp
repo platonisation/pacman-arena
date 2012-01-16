@@ -386,7 +386,7 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					
 					window.Draw ( msg ) ;
 					
-					unsigned char t = static_cast < unsigned char > ( clk.GetElapsedTime ( ) ) % 2 ;
+					unsigned char t = static_cast < unsigned char > ( clk.GetElapsedTime ( ) * 4 ) % 2 ;
 					Sprite* spt ;
 					
 					if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN )
@@ -405,12 +405,59 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					window.Draw ( *spt ) ;
 					
 					// Dessin sur la carte
+					float rotation = 0.f ;
+					
+					if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN || chars[i]->getStatus ( ) == Character::PACMAN )
+					{
+						
+						if ( chars[i]->getOrientation ( ) == Character::NORTH || chars[i]->getOrientation ( ) == Character::NONE )
+							rotation = 90.f ;
+						if ( chars[i]->getOrientation ( ) == Character::SOUTH )
+							rotation = -90.f ;
+						if ( chars[i]->getOrientation ( ) == Character::WEST )
+							rotation = 180.f ;
+						
+					}
+					
 					spt->Resize ( c_size, c_size ) ;
-					spt->SetPosition (
-						x_decalage + c_size * chars[i]->getX ( ),
-						c_size * chars[i]->getY ( ) ) ;
+					spt->Rotate ( rotation ) ;
+					
+					if ( rotation == 0.f )
+					{
+						
+						spt->SetPosition (
+							x_decalage + c_size * chars[i]->getX ( ),
+							c_size * chars[i]->getY ( ) ) ;
+						
+					}
+					else if ( rotation == 90.f )
+					{
+						
+						spt->SetPosition (
+							x_decalage + c_size * ( chars[i]->getX ( ) ),
+							c_size * ( chars[i]->getY ( ) + 1.f ) ) ;
+						
+					}
+					else if ( rotation == 180.f )
+					{
+						
+						spt->SetPosition (
+							x_decalage + c_size * ( chars[i]->getX ( ) + 1.f ),
+							c_size * ( chars[i]->getY ( ) + 1.f ) ) ;
+						
+					}
+					else if ( rotation == - 90.f )
+					{
+						
+						spt->SetPosition (
+							x_decalage + c_size * ( chars[i]->getX ( ) + 1.f ),
+							c_size * chars[i]->getY ( ) ) ;
+						
+					}
 					
 					window.Draw ( *spt ) ;
+					
+					spt->SetRotation ( 0.f ) ;
 					
 				}
 				

@@ -22,6 +22,7 @@ struct ClientData
 	Thread** thread ;
 	Party* party ;
 	Mutex* p_mutex ;
+	bool* ig ;
 } ;
 
 struct PartyData
@@ -125,6 +126,15 @@ void manage_client ( void* data )
 	// Déconnexion du client
 	std::cout << "Déconnexion du client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
 	(*cli_data->client)->first.Close ( ) ;
+	
+	if ( (*cli_data->client)->second == IPAddress ( 127,0,0,1 ) && *cli_data->ig )
+	{
+		
+		cli_data->p_mutex->Lock ( ) ;
+		cli_data->party->setStatus ( Party::ENDED ) ;
+		cli_data->p_mutex->Unlock ( ) ;
+		
+	}
 	
 	// Libération de la mémoire
 	delete (*cli_data->client) ;
@@ -591,12 +601,16 @@ int main ( int argc, char *argv[] )
 	
 	unsigned char slot ;
 	std::string map_path ;
+	bool ingame = false ;
 	
 	srand ( time ( NULL ) ) ;
 	
 	// Si on a le bon nombre de paramètres
-	if ( argc == 3 )
+	if ( argc == 3 || argc == 4 )
 	{
+		
+		if ( argc == 4 )
+			ingame = true ;
 		
 		// On récupère les paramètres
 		slot = atoi ( argv[1] ) ;
@@ -715,6 +729,7 @@ int main ( int argc, char *argv[] )
 				cli_data->thread = &threads[id] ;
 				cli_data->party = &party ;
 				cli_data->p_mutex = &p_mutex ;
+				cli_data->ig = & ingame ;
 				
 				std::cout << "Client " << new_client->second << " associé au thread [" << static_cast < int > ( id ) << "]" << std::endl ;
 				threads[id] = new Thread ( manage_client, static_cast < void* > ( cli_data ) ) ;
