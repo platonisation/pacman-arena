@@ -321,7 +321,7 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 							id = 13 ;
 						else if ( p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
 							id = 12 ;
-						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL )
+						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
 							id = 11 ;
 						else if ( p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
 							id = 0 ;
