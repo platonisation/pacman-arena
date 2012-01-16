@@ -43,8 +43,7 @@ void manage_client ( void* data )
 	chars[cli_data->id] = new Character ;
 	
 	std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = cli_data->party->getSpawns ( ) ;
-	unsigned char nb = rand ( ) % spawns.first ;
-	
+	unsigned char nb = cli_data->id ;
 	chars[cli_data->id]->setX ( static_cast < float > ( spawns.second[nb].first ) ) ;
 	chars[cli_data->id]->setY ( static_cast < float > ( spawns.second[nb].second ) ) ;
 	cli_data->p_mutex->Unlock ( ) ;
@@ -53,7 +52,6 @@ void manage_client ( void* data )
 	bool quit = false ;
 	while ( ! quit )
 	{
-		
 		cli_data->p_mutex->Lock ( ) ;
 		std::cout << "Obtention du mutex pour le client : [" << static_cast < int > ( cli_data->id ) << "] " << (*cli_data->client)->second << std::endl ;
 		
@@ -287,7 +285,7 @@ void manage_party ( void* data )
 								if ( j != i && chars[j] != NULL && abs ( chars[i]->getY ( ) - chars[j]->getY ( ) ) < 1.f && abs ( chars[i]->getX ( ) - chars[j]->getX ( ) ) < 1.f )
 								{
 									
-									// i se fait manger, respawn en fantôme et j devient le pacman
+									// i, pacman se fait manger, respawn en fantôme et j devient le pacman
 									if ( chars[i]->getStatus ( ) == Character::PACMAN && chars[j]->getStatus ( ) == Character::GHOST )
 									{
 										
@@ -361,19 +359,19 @@ void manage_party ( void* data )
 									x = chars[i]->getX ( ),
 									y = chars[i]->getY ( ) ;
 								
-								if ( x == floor ( x ) && y == floor ( y ) )
-								{
+								/*if ( x == floor ( x ) && y == floor ( y ) )
+								{*/ // POURUQOI !!!!
 									
 									if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::PAC_POINT )
 									{
-										
+									
 										chars[i]->setPoint ( chars[i]->getPoint ( ) + 10 ) ;
 										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
 										
 									}
 									else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
 									{
-										
+										std::cout<<"SUPER POINT"<<std::endl;
 										chars[i]->setPoint ( chars[i]->getPoint ( ) + 50 ) ;
 										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
 										chars[i]->setStatus ( Character::SUPER_PACMAN ) ;
@@ -381,7 +379,7 @@ void manage_party ( void* data )
 										
 									}
 									
-								}
+								//}
 								
 							} // Collision avec les points
 							
@@ -399,7 +397,7 @@ void manage_party ( void* data )
 					} // Parcourt de la liste des personnages
 					
 					// Fais spawn Pacman au bout de 30 secondes
-					if ( ! pacman_spawn && now > 30.f )
+					if ( ! pacman_spawn && now > 3.f )
 					{
 						
 						bool trouve = false ;
