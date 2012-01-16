@@ -31,6 +31,15 @@ struct PartyData
 	Mutex* p_mutex ;
 } ;
 
+std::string int2str ( int i )
+{
+	
+	std::ostringstream out ;
+	out << i ;
+	return out.str ( ) ;
+	
+}
+
 void manage_client ( void* data )
 {
 	
@@ -41,6 +50,8 @@ void manage_client ( void* data )
 	cli_data->p_mutex->Lock ( ) ;
 	Character** chars = cli_data->party->getChars ( ) ;
 	chars[cli_data->id] = new Character ;
+	
+	chars[cli_data->id]->setName ( std::string ( "Player " ) + int2str ( static_cast < int > ( cli_data->id ) ) ) ;
 	
 	std::pair < unsigned char, std::pair < unsigned char, unsigned char >* > spawns = cli_data->party->getSpawns ( ) ;
 	unsigned char nb = cli_data->id ;
@@ -216,19 +227,23 @@ void manage_party ( void* data )
 								
 								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.5f ) ) != Party::WALL && wish == Character::NORTH )
 									move_to = Character::NORTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.f ) ) != Party::WALL && wish == Character::SOUTH )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( floor ( chars[i]->getY ( ) ) ) ) != Party::WALL && wish == Character::SOUTH
+											&& party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( floor ( chars[i]->getY ( ) + 1.1f ) ) ) != Party::WALL )
 									move_to = Character::SOUTH ;
 								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.5f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::WEST )
 									move_to = Character::WEST ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::EAST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( floor ( chars[i]->getX ( ) ) ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::EAST
+											&& party_data->party->getCase ( static_cast < unsigned char > ( floor ( chars[i]->getX ( ) + 1.1f ) ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
 									move_to = Character::EAST ;
 								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.5f ) ) != Party::WALL && moving == Character::NORTH )
 									move_to = Character::NORTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.f ) ) != Party::WALL && moving == Character::SOUTH )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( floor ( chars[i]->getY ( ) ) ) ) != Party::WALL && moving == Character::SOUTH
+											&& party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( floor ( chars[i]->getY ( ) + 1.1f ) ) ) != Party::WALL )
 									move_to = Character::SOUTH ;
 								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.5f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::WEST )
 									move_to = Character::WEST ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::EAST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( floor ( chars[i]->getX ( ) ) ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::EAST
+											&& party_data->party->getCase ( static_cast < unsigned char > ( floor ( chars[i]->getX ( ) + 1.1f ) ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL )
 									move_to = Character::EAST ;
 								
 								if ( move_to == Character::NORTH )
