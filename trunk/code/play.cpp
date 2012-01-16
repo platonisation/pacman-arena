@@ -311,12 +311,45 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					else if ( c == Party::WALL )
 					{
 						
-						wall_sprite[6].Resize ( c_size, c_size ) ;
-						wall_sprite[6].SetPosition (
+						unsigned char id = 6 ;
+						
+						if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
+							id = 15 ;
+						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
+							id = 14 ;
+						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL )
+							id = 13 ;
+						else if ( p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
+							id = 12 ;
+						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL && p.getCase ( i, j - 1 ) == Party::WALL )
+							id = 11 ;
+						else if ( p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i, j + 1 ) == Party::WALL )
+							id = 0 ;
+						else if ( p.getCase ( i - 1, j ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL )
+							id = 1 ;
+						else if ( p.getCase ( i, j + 1 ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL )
+							id = 2 ;
+						else if ( p.getCase ( i, j + 1 ) == Party::WALL && p.getCase ( i - 1, j ) == Party::WALL )
+							id = 3 ;
+						else if ( p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i - 1, j ) == Party::WALL )
+							id = 4 ;
+						else if ( p.getCase ( i, j - 1 ) == Party::WALL && p.getCase ( i + 1, j ) == Party::WALL )
+							id = 5 ;
+						else if ( p.getCase ( i, j + 1 ) == Party::WALL )
+							id = 7 ;
+						else if ( p.getCase ( i, j - 1 ) == Party::WALL )
+							id = 8 ;
+						else if ( p.getCase ( i + 1, j ) == Party::WALL )
+							id = 9 ;
+						else if ( p.getCase ( i - 1, j ) == Party::WALL )
+							id = 10 ;
+						
+						wall_sprite[id].Resize ( c_size, c_size ) ;
+						wall_sprite[id].SetPosition (
 							x_decalage + c_size * static_cast < float > ( i ),
 							c_size * static_cast < float > ( j ) ) ;
 						
-						window.Draw ( wall_sprite[6] ) ;
+						window.Draw ( wall_sprite[id] ) ;
 						
 					}
 					
