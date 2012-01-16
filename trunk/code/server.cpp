@@ -359,33 +359,28 @@ void manage_party ( void* data )
 									x = chars[i]->getX ( ),
 									y = chars[i]->getY ( ) ;
 								
-								/*if ( x == floor ( x ) && y == floor ( y ) )
-								{*/ // POURUQOI !!!!
+								if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::PAC_POINT )
+								{
+								
+									chars[i]->setPoint ( chars[i]->getPoint ( ) + 10 ) ;
+									party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
 									
-									if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::PAC_POINT )
-									{
+								}
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
+								{
 									
-										chars[i]->setPoint ( chars[i]->getPoint ( ) + 10 ) ;
-										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
-										
-									}
-									else if ( party_data->party->getCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ) ) == Party::SUPERPAC_POINT )
-									{
-										std::cout<<"SUPER POINT"<<std::endl;
-										chars[i]->setPoint ( chars[i]->getPoint ( ) + 50 ) ;
-										party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
-										chars[i]->setStatus ( Character::SUPER_PACMAN ) ;
-										chars[i]->resetTimer ( ) ;
-										
-									}
+									chars[i]->setPoint ( chars[i]->getPoint ( ) + 50 ) ;
+									party_data->party->setCase ( static_cast < unsigned char > ( x ), static_cast < unsigned char > ( y ), Party::VOID ) ;
+									chars[i]->setStatus ( Character::SUPER_PACMAN ) ;
+									chars[i]->resetTimer ( ) ;
 									
-								//}
+								}
 								
 							} // Collision avec les points
 							
 							// On regarde si le personnage est Super Pacman et si son timer a expiré
 							// ~ normalement terminé - à tester
-							if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN && chars[i]->getTimer ( ) > 10.f )
+							if ( chars[i]->getStatus ( ) == Character::SUPER_PACMAN && chars[i]->getTimer ( ) > 6.f )
 							{
 								
 								chars[i]->setStatus ( Character::PACMAN ) ;
@@ -396,8 +391,8 @@ void manage_party ( void* data )
 						
 					} // Parcourt de la liste des personnages
 					
-					// Fais spawn Pacman au bout de 30 secondes
-					if ( ! pacman_spawn && now > 3.f )
+					// Fais spawn Pacman au bout de 10 secondes
+					if ( ! pacman_spawn && now > 10.f )
 					{
 						
 						bool trouve = false ;
@@ -412,6 +407,100 @@ void manage_party ( void* data )
 								
 								chars[pacman_id]->setStatus ( Character::PACMAN ) ;
 								trouve = true ;
+								
+							}
+							
+						}
+						
+					}
+					
+					// Respawn des Pac Points
+					bool pac_point = false ;
+					
+					// On vérifie déjà s'il en reste
+					for ( unsigned int i = 0 ; i < party_data->party->getWidth ( ) ; i ++ )
+					{
+						
+						for ( unsigned int j = 0 ; j < party_data->party->getHeight ( ) ; j ++ )
+						{
+							
+							if ( party_data->party->getCase ( i, j ) == Party::PAC_POINT || party_data->party->getCase ( i, j ) == Party::SUPERPAC_POINT )
+							{
+								
+								pac_point = true ;
+								break ;
+								
+							}
+							
+						}
+						
+					}
+					
+					// S'il n'y en a plus
+					if ( ! pac_point )
+					{
+						
+						// On détermine aléatoirement dans quel quart de la carte on fait respawn les points
+						unsigned char section = static_cast < unsigned char > ( rand ( ) % 4 ) ;
+						
+						unsigned int min_i, max_i, min_j, max_j ;
+						
+						if ( section == 0 )
+						{
+							
+							min_i = 0 ;
+							max_i = party_data->party->getWidth ( ) / 2 ;
+							min_j = 0 ;
+							max_j = party_data->party->getHeight ( ) / 2 ;
+							
+						}
+						else if ( section == 1 )
+						{
+							
+							min_i = party_data->party->getWidth ( ) / 2 + 1 ;
+							max_i = party_data->party->getWidth ( ) ;
+							min_j = 0 ;
+							max_j = party_data->party->getHeight ( ) / 2 ;
+							
+						}
+						else if ( section == 2 )
+						{
+							
+							min_i = 0 ;
+							max_i = party_data->party->getWidth ( ) / 2 ;
+							min_j = party_data->party->getHeight ( ) / 2 + 1 ;
+							max_j = party_data->party->getHeight ( ) ;
+							
+						}
+						else if ( section == 3 )
+						{
+							
+							min_i = party_data->party->getWidth ( ) / 2 + 1 ;
+							max_i = party_data->party->getWidth ( ) ;
+							min_j = party_data->party->getHeight ( ) / 2 + 1 ;
+							max_j = party_data->party->getHeight ( ) ;
+							
+						}
+						
+						// On les fait respawn dans le quart choisi
+						for ( unsigned int i = min_i ; i < max_i ; i ++ )
+						{
+							
+							for ( unsigned int j = min_j ; j < max_j ; j ++ )
+							{
+								
+								// Si c'est bien une case vide
+								if ( party_data->party->getCase ( i, j ) == Party::VOID )
+								{
+									
+									// On fait spawn un super pac point à 1% de chance, pac point sinon
+									section = static_cast < unsigned char > ( rand ( ) % 100 ) ;
+									if ( section == 0 )
+										party_data->party->setCase ( i, j, Party::SUPERPAC_POINT ) ;
+									else
+										party_data->party->setCase ( i, j, Party::PAC_POINT ) ;
+									
+								}
 								
 							}
 							
