@@ -214,48 +214,48 @@ void manage_party ( void* data )
 										moving = chars[i]->getMoving ( ),
 										move_to = Character::NONE ;
 								
-								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL && wish == Character::NORTH )
+								if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.5f ) ) != Party::WALL && wish == Character::NORTH )
 									move_to = Character::NORTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL && wish == Character::SOUTH )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.f ) ) != Party::WALL && wish == Character::SOUTH )
 									move_to = Character::SOUTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::WEST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.5f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::WEST )
 									move_to = Character::WEST ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::EAST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && wish == Character::EAST )
 									move_to = Character::EAST ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.1f ) ) != Party::WALL && moving == Character::NORTH )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) - 0.5f ) ) != Party::WALL && moving == Character::NORTH )
 									move_to = Character::NORTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.1f ) ) != Party::WALL && moving == Character::SOUTH )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) ), static_cast < unsigned char > ( chars[i]->getY ( ) + 1.f ) ) != Party::WALL && moving == Character::SOUTH )
 									move_to = Character::SOUTH ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::WEST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.5f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::WEST )
 									move_to = Character::WEST ;
-								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) - 0.1f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::EAST )
+								else if ( party_data->party->getCase ( static_cast < unsigned char > ( chars[i]->getX ( ) + 1.f ), static_cast < unsigned char > ( chars[i]->getY ( ) ) ) != Party::WALL && moving == Character::EAST )
 									move_to = Character::EAST ;
 								
 								if ( move_to == Character::NORTH )
 								{
 									
-									chars[i]->setY ( chars[i]->getY ( ) - 0.1f ) ;
+									chars[i]->setY ( chars[i]->getY ( ) - 0.5f ) ;
 									chars[i]->setOrientation ( Character::NORTH ) ;
 									
 								}
 								else if ( move_to == Character::SOUTH )
 								{
 									
-									chars[i]->setY ( chars[i]->getY ( ) + 0.1f ) ;
+									chars[i]->setY ( chars[i]->getY ( ) + 0.5f ) ;
 									chars[i]->setOrientation ( Character::SOUTH ) ;
 									
 								}
 								else if ( move_to == Character::WEST )
 								{
 									
-									chars[i]->setX ( chars[i]->getX ( ) - 0.1f ) ;
+									chars[i]->setX ( chars[i]->getX ( ) - 0.5f ) ;
 									chars[i]->setOrientation ( Character::WEST ) ;
 									
 								}
 								else if ( move_to == Character::EAST )
 								{
 									
-									chars[i]->setX ( chars[i]->getX ( ) + 0.1f ) ;
+									chars[i]->setX ( chars[i]->getX ( ) + 0.5f ) ;
 									chars[i]->setOrientation ( Character::EAST ) ;
 									
 								}
