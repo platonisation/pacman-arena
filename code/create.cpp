@@ -213,9 +213,23 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 							quitter = true ;
 							if (sck.Connect(8910, "127.0.0.1") == Socket::Done)
 							{
-								std::cout<<"conncetion";
-								quitter = true;
-								action = 5;
+								Sleep ( 0.050f ) ;
+									
+									char* c = new char[2] ;
+									std::size_t r ;
+									
+									sck.Receive ( c, static_cast < std::size_t > ( sizeof ( char ) * 2 ), r ) ;
+									
+									if ( c[0] == '0' )
+									{
+										quitter = true;
+										action = 1 ;
+									}
+									else
+									{
+										quitter = true;
+										action = 5;
+									}
 							}
 						}
 					}
