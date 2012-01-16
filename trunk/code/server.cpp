@@ -701,7 +701,7 @@ int main ( int argc, char *argv[] )
 				cli_data->party = &party ;
 				cli_data->p_mutex = &p_mutex ;
 				
-				std::cout << "Client " << new_client->second << " associé au thread " << id << std::endl ;
+				std::cout << "Client " << new_client->second << " associé au thread [" << static_cast < int > ( id ) << "]" << std::endl ;
 				threads[id] = new Thread ( manage_client, static_cast < void* > ( cli_data ) ) ;
 				threads[id]->Launch ( ) ;
 				
