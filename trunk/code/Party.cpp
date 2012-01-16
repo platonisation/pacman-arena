@@ -1,5 +1,6 @@
 #include "Party.h"
 #include <fstream>
+#include <iostream>
 
 const unsigned char Party::WAITING = 0 ;
 const unsigned char Party::PLAYING = 1 ;

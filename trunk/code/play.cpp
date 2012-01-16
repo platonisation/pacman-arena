@@ -408,7 +408,7 @@ int play ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 					spt->Resize ( c_size, c_size ) ;
 					spt->SetPosition (
 						x_decalage + c_size * chars[i]->getX ( ),
-						c_size * chars[i]->getX ( ) ) ;
+						c_size * chars[i]->getY ( ) ) ;
 					
 					window.Draw ( *spt ) ;
 					
