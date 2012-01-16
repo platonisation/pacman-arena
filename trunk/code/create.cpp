@@ -203,9 +203,9 @@ int create ( sf::RenderWindow& window, myOption& opt, sf::SocketTCP& sck )
 						{
 							std::string strNbPlayers ;
 							strNbPlayers = static_cast<char>(nbPlayers) ;
-							std::cout<<"maps/" + listMap[cptMap]<<std::endl;
+							std::string path = "maps/" + listMap[cptMap] ;
 							
-							execl("./Pacman_Serv", "./Pacman_Serv", strNbPlayers.c_str ( ), "maps/default.pacmap"  ,NULL);
+							execl("./Pacman_Serv", "./Pacman_Serv", strNbPlayers.c_str ( ), path.c_str ( ), "IG" ,NULL);
 						}
 						else
 						{
